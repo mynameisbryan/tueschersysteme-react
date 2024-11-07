@@ -1,0 +1,46 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: strapi
+      POSTGRES_USER: strapi
+      POSTGRES_PASSWORD: strapi
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  strapi:
+    build: 
+      context: ./backend
+    environment:
+      DATABASE_CLIENT: postgres
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_NAME: strapi
+      DATABASE_USERNAME: strapi
+      DATABASE_PASSWORD: strapi
+      NODE_ENV: development
+    volumes:
+      - ./backend:/srv/app
+      - /srv/app/node_modules
+    ports:
+      - "1337:1337"
+    depends_on:
+      - postgres
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        - NEXT_PUBLIC_STRAPI_API_URL=http://strapi:1337
+        - STRAPI_API_TOKEN=${STRAPI_API_TOKEN}
+    environment:
+      - NEXT_PUBLIC_STRAPI_API_URL=http://strapi:1337
+      - STRAPI_API_TOKEN=${STRAPI_API_TOKEN}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - strapi
+
+volumes:
+  postgres-data:

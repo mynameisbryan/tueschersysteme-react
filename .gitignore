@@ -1,0 +1,46 @@
+# Dependencies
+**/node_modules
+**/.pnp
+**/.pnp.*
+**/.yarn/*
+!**/.yarn/patches
+!**/.yarn/plugins
+!**/.yarn/releases
+!**/.yarn/sdks
+!**/.yarn/versions
+
+# Build
+**/build
+**/dist
+**/.next
+**/out
+
+# Environment
+.env*
+!.env.example
+
+# Misc
+.DS_Store
+*.pem
+*.log
+.cache
+.tmp
+.idea
+.vscode
+*.swp
+*.swo
+
+# Strapi specific
+**/.strapi
+**/.strapi-updater.json
+**/license.txt
+**/exports
+**/public/uploads/*
+!**/public/uploads/.gitkeep
+
+# Database
+*.sqlite*
+*.db
+
+# Testing
+**/coverage
