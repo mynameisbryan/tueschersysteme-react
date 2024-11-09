@@ -1,5 +1,5 @@
 import { StrapiError, StrapiResponse } from '@/types/strapi';
-import { ProductCategoryData, FAQData } from '@/types/content';
+import { ProductCategoryData, FAQData, ContactSectionData } from '@/types/content';
 import qs from 'qs';
 
 const getApiUrl = () => {
@@ -107,5 +107,45 @@ export async function getProductCategories(page = 1, pageSize = 9) {
 
 export async function getFAQs() {
   return await fetchAPI<StrapiResponse<FAQData[]>>('/api/faqs');
+}
+
+export function sendContactForm(formData: {
+  name: string;
+  email: string;
+  phone: string;
+  message: string;
+  privacy: boolean;
+  newsletter: boolean;
+}) {
+  const response = fetchAPI('/api/contact-forms', {
+    method: 'POST',
+    body: JSON.stringify({ data: formData }),
+  });
+  return response;
+}
+
+export async function getContactData() {
+  const query = {
+    populate: {
+      address: {
+        populate: '*'
+      },
+      contact_form: {
+        populate: '*'
+      }
+    }
+  };
+  return fetchAPI<StrapiResponse<ContactSectionData>>('/api/contactsection', query);
+}
+
+function checkEnvironmentVariables() {
+  const required = ['STRAPI_INTERNAL_URL', 'STRAPI_API_TOKEN'];
+  const missing = required.filter(key => !process.env[key]);
+  
+  if (missing.length > 0) {
+    console.error('Missing required environment variables:', missing);
+    return false;
+  }
+  return true;
 }
 

@@ -66,10 +66,13 @@ export default function FeatureItem({ title, icon }: FeatureItemProps) {
                    group transition-all duration-300 hover:text-white">
       {/* Icon Container */}
       <div className="flex-shrink-0 w-7 h-7 sm:w-9 sm:h-9 md:w-11 md:h-11
-                    rounded-full bg-white/10 
+                    rounded-full bg-tuscher-cyan/20 
                     flex items-center justify-center
-                    group-hover:bg-white/20 transition-all duration-300">
-        {getIcon(icon as IconType)}
+                    group-hover:bg-tuscher-cyan/30 transition-all duration-300">
+        {/* Icon with updated color */}
+        <div className="text-tuscher-cyan">
+          {getIcon(icon as IconType)}
+        </div>
       </div>
       
       {/* Text */}

@@ -166,16 +166,21 @@
 
   /* Glass effect card */
   .glass-card {
-    @apply bg-white/10 backdrop-blur-md rounded-2xl 
-           p-6 md:p-8
+    @apply bg-white/90 backdrop-blur-md rounded-xl 
+           p-6 sm:p-8
            border border-white/20 
            shadow-xl
            transition-all duration-300
-           hover:scale-[1.02]
-           hover:z-10
-           before:hidden
-           after:hidden
-           relative;
+           hover:bg-white/95;
+  }
+
+  .contact-info-card {
+    @apply bg-white/90 backdrop-blur-md rounded-lg 
+           p-4 sm:p-6
+           border border-white/20 
+           shadow-lg
+           transition-all duration-300
+           hover:bg-white/95;
   }
 
   /* Hero section specific */
@@ -203,6 +208,31 @@
            from-tuscher-blue/95 
            via-tuscher-blue/85 
            to-tuscher-blue/50;
+  }
+
+  .contact-input {
+    @apply block w-full rounded-lg border-2 border-tuscher-blue/20 
+           bg-white/90 backdrop-blur-sm py-3 px-4 text-tuscher-blue 
+           placeholder-transparent transition-all duration-200
+           focus:border-tuscher-cyan focus:outline-none focus:ring-0
+           focus:bg-white;
+  }
+
+  .contact-label {
+    @apply absolute -top-2.5 left-3 bg-white px-1 text-sm 
+           text-tuscher-blue/70 transition-all duration-200
+           peer-placeholder-shown:top-3 peer-placeholder-shown:left-4 
+           peer-placeholder-shown:text-base peer-focus:-top-2.5 
+           peer-focus:left-3 peer-focus:text-sm 
+           peer-focus:text-tuscher-cyan;
+  }
+
+  .glass-card-dark {
+    @apply bg-black/30 backdrop-blur-md rounded-xl 
+           p-6 sm:p-8
+           border border-white/10 
+           shadow-xl
+           transition-all duration-300;
   }
 }
 

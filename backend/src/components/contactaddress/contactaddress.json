@@ -1,0 +1,28 @@
+{
+  "collectionName": "components_contactaddress_contactaddresses",
+  "info": {
+    "displayName": "contactaddress",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "street": {
+      "type": "string"
+    },
+    "city": {
+      "type": "string"
+    },
+    "postal_code": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "opening_hours": {
+      "type": "string"
+    }
+  }
+}

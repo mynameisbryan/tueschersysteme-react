@@ -77,10 +77,11 @@ export default async function ProductCategories() {
     }
 
     return (
-      <section className="section bg-gray-100">
-        <div className="container-padding">
-          <h2 className="section-title">Produktkategorien</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <section className="py-16 md:py-24">
+        <div className="container">
+          <h2 className="section-title">Unsere Produkte</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
             {response.data.map((category) => {
               const { Title = 'Untitled', Description = '', slug = '#', Image } = category.attributes || {};
               const imageData = Image?.data?.[0]?.attributes;
@@ -88,23 +89,23 @@ export default async function ProductCategories() {
               const altText = imageData?.alternativeText || Title;
 
               return (
-                <article key={category.id} className="card card-hover">
-                  {imageUrl ? (
+                <div key={category.id} className="card card-hover group">
+                  <div className="relative aspect-[16/9] overflow-hidden">
                     <NextImage
                       src={getStrapiMediaUrl(imageUrl)}
                       alt={altText}
-                      width={400}
-                      height={300}
-                      className="w-full h-48 object-cover"
+                      fill
+                      className="object-cover transition-transform duration-300 
+                               group-hover:scale-105"
                     />
-                  ) : (
-                    <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
-                      <p className="text-gray-500">No image available</p>
-                    </div>
-                  )}
-                  <div className="p-6 space-y-4">
-                    <h3 className="text-lg font-semibold">{Title}</h3>
-                    <p className="text-gray-600">{Description || 'No description available'}</p>
+                  </div>
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold text-tuscher-blue mb-2">
+                      {Title}
+                    </h3>
+                    <p className="text-tuscher-blue/70">
+                      {Description}
+                    </p>
                     <Link 
                       href={`/products/${slug}`} 
                       className="inline-block text-tuscher-blue hover:text-tuscher-light transition-colors"
@@ -112,7 +113,7 @@ export default async function ProductCategories() {
                       Mehr erfahren
                     </Link>
                   </div>
-                </article>
+                </div>
               );
             })}
           </div>

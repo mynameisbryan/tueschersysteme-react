@@ -7,6 +7,8 @@ module.exports = {
     extend: {
       backgroundImage: {
         'radial-gradient': 'radial-gradient(circle at center, transparent 50%, white 100%)',
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+      
       },
       colors: {
         background: 'var(--background)',

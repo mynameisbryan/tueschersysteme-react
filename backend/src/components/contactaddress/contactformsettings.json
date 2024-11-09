@@ -1,0 +1,24 @@
+{
+  "collectionName": "components_contactaddress_contactformsettings",
+  "info": {
+    "displayName": "contactformsettings"
+  },
+  "options": {},
+  "attributes": {
+    "success_message": {
+      "type": "string"
+    },
+    "error_message": {
+      "type": "string"
+    },
+    "privacy_text": {
+      "type": "string"
+    },
+    "newsletter_text": {
+      "type": "string"
+    },
+    "submit_button_text": {
+      "type": "string"
+    }
+  }
+}

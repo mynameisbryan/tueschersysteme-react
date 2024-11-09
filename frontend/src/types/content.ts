@@ -175,5 +175,25 @@ export interface FAQData {
   publishedAt: string;
 }
 
+export interface ContactSectionData {
+  title: string;
+  subtitle: string;
+  address: {
+    street: string;
+    city: string;
+    postal_code: string;
+    phone: string;
+    email: string;
+    opening_hours: string;
+  };
+  contact_form: {
+    success_message: string;
+    error_message: string;
+    privacy_text: string;
+    newsletter_text: string;
+    submit_button_text: string;
+  };
+}
+
 export type { MediaFormat, MediaFormats };
   

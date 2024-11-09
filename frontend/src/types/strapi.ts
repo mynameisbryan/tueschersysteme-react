@@ -71,4 +71,20 @@ export interface StrapiMediaAttributes extends StrapiBaseAttributes {
       height: number;
     };
   };
+}
+
+export interface ContactFormEntry {
+  id: number;
+  attributes: {
+    documentId: string;
+    name: string;
+    email: string;
+    phone?: string;
+    message: string;
+    privacy: boolean;
+    newsletter: boolean;
+    createdAt: string;
+    updatedAt: string;
+    publishedAt: string;
+  };
 } 

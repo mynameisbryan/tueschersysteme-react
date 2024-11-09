@@ -105,7 +105,7 @@ export default async function HeroSection() {
           {/* Right Side - Features List */}
           {featureitems.length > 0 && (
             <div className="w-full lg:w-6/12">
-              <div className="glass-card p-5 sm:p-6 md:p-8">
+              <div className="glass-card-dark p-5 sm:p-6 md:p-8">
                 <h2 className="text-lg sm:text-xl md:text-2xl font-bold 
                              mb-4 sm:mb-5 md:mb-6 text-white">
                   Warum Tüscher Systeme?

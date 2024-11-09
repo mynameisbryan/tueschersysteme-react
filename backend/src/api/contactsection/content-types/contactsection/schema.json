@@ -1,0 +1,31 @@
+{
+  "kind": "singleType",
+  "collectionName": "contactsections",
+  "info": {
+    "singularName": "contactsection",
+    "pluralName": "contactsections",
+    "displayName": "contactsection"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "subtitle": {
+      "type": "string"
+    },
+    "address": {
+      "type": "component",
+      "repeatable": false,
+      "component": "contactaddress.contactaddress"
+    },
+    "contact_form": {
+      "type": "component",
+      "repeatable": false,
+      "component": "contactaddress.contactformsettings"
+    }
+  }
+}
