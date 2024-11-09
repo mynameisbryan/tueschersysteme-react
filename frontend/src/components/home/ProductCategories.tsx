@@ -1,9 +1,9 @@
 // src/components/home/ProductCategories.tsx
 import { default as NextImage } from 'next/image';
 import Link from 'next/link';
-import { fetchAPI, getStrapiMediaUrl } from '@/utils/api';
-import { ProductCategoryData } from '@/types/content';
-import { StrapiError, StrapiResponse, StrapiImageFormat } from '@/types/strapi';
+import { fetchAPI, getImageUrl } from '@/utils/api';
+import { HomeProductCategory } from '@/types/common';
+import { StrapiError, StrapiResponse, StrapiMediaFormat } from '@/types/strapi';
 
 interface RawImageData {
   id: number;
@@ -12,18 +12,18 @@ interface RawImageData {
   width: number;
   height: number;
   formats?: {
-    [key: string]: StrapiImageFormat;
+    [key: string]: StrapiMediaFormat;
   };
 }
 
-async function getProductCategories(page = 1, pageSize = 9): Promise<StrapiResponse<ProductCategoryData[]>> {
+async function getProductCategories(page = 1, pageSize = 9): Promise<StrapiResponse<HomeProductCategory[]>> {
   try {
-    const response = await fetchAPI<StrapiResponse<ProductCategoryData[]>>('/api/product-categories', {
+    const response = await fetchAPI<StrapiResponse<HomeProductCategory[]>>('/api/product-categories', {
       pagination: { page, pageSize },
       populate: '*'
     });
 
-    const transformedData: StrapiResponse<ProductCategoryData[]> = {
+    const transformedData: StrapiResponse<HomeProductCategory[]> = {
       data: response.data.map(item => ({
         id: item.id,
         attributes: {
@@ -92,7 +92,7 @@ export default async function ProductCategories() {
                 <div key={category.id} className="card card-hover group">
                   <div className="relative aspect-[16/9] overflow-hidden">
                     <NextImage
-                      src={getStrapiMediaUrl(imageUrl)}
+                      src={getImageUrl(imageUrl)}
                       alt={altText}
                       fill
                       className="object-cover transition-transform duration-300 

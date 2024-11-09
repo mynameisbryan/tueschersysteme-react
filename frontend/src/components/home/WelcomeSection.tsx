@@ -1,4 +1,4 @@
-import { fetchAPI, getStrapiMediaUrl } from '@/utils/api';
+import { fetchAPI, getImageUrl } from '@/utils/api';
 import { WelcomeSectionData } from '@/types/content';
 import Image from 'next/image';
 import Markdown from 'markdown-to-jsx';
@@ -85,7 +85,7 @@ export default async function WelcomeSection() {
               {imageUrl && (
                 <div className="relative aspect-[16/9] overflow-hidden">
                   <Image
-                    src={getStrapiMediaUrl(imageUrl)}
+                    src={getImageUrl(imageUrl)}
                     alt="Welcome Illustration"
                     fill
                     className="object-cover transition-transform duration-300 

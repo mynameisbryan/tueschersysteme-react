@@ -35,7 +35,7 @@ export interface StrapiError {
   };
 }
 
-export interface StrapiImageFormat {
+export interface StrapiMediaFormat {
   ext: string;
   url: string;
   hash: string;
@@ -46,31 +46,25 @@ export interface StrapiImageFormat {
   height: number;
 }
 
-export interface StrapiMedia {
-  data: Array<{
-    id: number;
-    attributes: {
-      url: string;
-      alternativeText: string | null;
-      formats: {
-        [key: string]: StrapiImageFormat;
-      };
-    };
-  }>;
-}
-
-export interface StrapiMediaAttributes extends StrapiBaseAttributes {
-  url: string;
-  alternativeText?: string;
-  width: number;
-  height: number;
-  formats?: {
-    [key: string]: {
-      url: string;
-      width: number;
-      height: number;
+export interface StrapiMediaData {
+  id: number;
+  attributes: {
+    url: string;
+    alternativeText: string | null;
+    width: number;
+    height: number;
+    formats: {
+      [key: string]: StrapiMediaFormat;
     };
   };
+}
+
+export interface StrapiMedia {
+  data: StrapiMediaData[];
+}
+
+export interface StrapiSingleMedia {
+  data: StrapiMediaData;
 }
 
 export interface ContactFormEntry {
@@ -87,4 +81,71 @@ export interface ContactFormEntry {
     updatedAt: string;
     publishedAt: string;
   };
+}
+
+export interface FileResourceData {
+  id: number;
+  attributes: {
+    name: string;
+    url: string;
+    formats?: {
+      thumbnail?: {
+        url: string;
+      };
+    };
+  };
+}
+
+export interface StrapiImage {
+  data: {
+    id: number;
+    attributes: {
+      url: string;
+      alternativeText?: string;
+      width: number;
+      height: number;
+      formats?: {
+        thumbnail?: {
+          url: string;
+          width: number;
+          height: number;
+        };
+        small?: {
+          url: string;
+          width: number;
+          height: number;
+        };
+        medium?: {
+          url: string;
+          width: number;
+          height: number;
+        };
+        large?: {
+          url: string;
+          width: number;
+          height: number;
+        };
+      };
+    };
+  };
+}
+
+export interface Product {
+  id: number;
+  attributes: {
+    Name: string;
+    ShortDescription: string;
+    DetailedDescription: string;
+    Features: string[];
+    MainImage: StrapiSingleMedia;
+    GalleryImages: StrapiMedia;
+    CTALink?: string;
+  } & StrapiBaseAttributes;
+}
+
+export interface StrapiMediaFormats {
+  large?: StrapiMediaFormat;
+  medium?: StrapiMediaFormat;
+  small?: StrapiMediaFormat;
+  thumbnail?: StrapiMediaFormat;
 } 

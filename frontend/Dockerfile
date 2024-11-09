@@ -18,6 +18,9 @@ RUN npm install sharp
 # Install zod
 RUN npm install zod
 
+# Install framer-motion
+RUN npm install framer-motion@latest
+
 # Install ESLint plugins with specific versions that match Next.js requirements
 RUN npm install --save-dev --legacy-peer-deps \
     @typescript-eslint/eslint-plugin@6.21.0 \

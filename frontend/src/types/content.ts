@@ -1,23 +1,6 @@
 // src/types/content.ts
-import { StrapiBaseAttributes, StrapiImageFormat, StrapiMedia } from './strapi';
-
-interface MediaFormat {
-  ext: string;
-  url: string;
-  hash: string;
-  mime: string;
-  name: string;
-  size: number;
-  width: number;
-  height: number;
-}
-
-interface MediaFormats {
-  large?: MediaFormat;
-  medium?: MediaFormat;
-  small?: MediaFormat;
-  thumbnail?: MediaFormat;
-}
+import { StrapiBaseAttributes, StrapiMedia, StrapiMediaFormat, StrapiMediaFormats } from './strapi';
+import { Product, BaseProductCategory } from './common';
 
 export interface MediaItem {
   id: number;
@@ -26,7 +9,7 @@ export interface MediaItem {
   caption: string | null;
   width: number;
   height: number;
-  formats: MediaFormats;
+  formats: StrapiMediaFormats;
   url: string;
 }
 
@@ -44,17 +27,6 @@ interface FeatureItem {
   id: number;
   title: string;
   icon: IconType;
-}
-
-export interface ImageFormat {
-  ext: string;
-  url: string;
-  hash: string;
-  mime: string;
-  name: string;
-  size: number;
-  width: number;
-  height: number;
 }
 
 export interface HeroSectionData {
@@ -76,10 +48,10 @@ export interface HeroSectionData {
     width: number;
     height: number;
     formats: {
-      large?: ImageFormat;
-      medium?: ImageFormat;
-      small?: ImageFormat;
-      thumbnail?: ImageFormat;
+      large?: StrapiMediaFormat;
+      medium?: StrapiMediaFormat;
+      small?: StrapiMediaFormat;
+      thumbnail?: StrapiMediaFormat;
     };
     hash: string;
     ext: string;
@@ -120,10 +92,10 @@ export interface WelcomeSectionData {
     width: number;
     height: number;
     formats: {
-      large?: ImageFormat;
-      medium?: ImageFormat;
-      small?: ImageFormat;
-      thumbnail?: ImageFormat;
+      large?: StrapiMediaFormat;
+      medium?: StrapiMediaFormat;
+      small?: StrapiMediaFormat;
+      thumbnail?: StrapiMediaFormat;
     };
     hash: string;
     ext: string;
@@ -142,15 +114,7 @@ export interface WelcomeSectionData {
   publishedAt: string;
 }
 
-export interface ProductCategoryData {
-  id: number;
-  attributes: StrapiBaseAttributes & {
-    Title: string;
-    Description: string;
-    slug: string;
-    Image: StrapiMedia;
-  };
-}
+export type ProductCategoryData = BaseProductCategory;
 
 export interface UeberUnsData {
   id: number;
@@ -194,6 +158,4 @@ export interface ContactSectionData {
     submit_button_text: string;
   };
 }
-
-export type { MediaFormat, MediaFormats };
   

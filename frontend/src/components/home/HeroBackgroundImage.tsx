@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { getStrapiMediaUrl } from '@/utils/api';
+import { getImageUrl } from '@/utils/api';
 
 interface HeroBackgroundImageProps {
   imageUrl: string;
@@ -11,7 +11,7 @@ export default function HeroBackgroundImage({ imageUrl }: HeroBackgroundImagePro
   return (
     <div className="absolute inset-0">
       <Image
-        src={getStrapiMediaUrl(imageUrl)}
+        src={getImageUrl(imageUrl)}
         alt="Hero Background"
         fill
         priority
@@ -23,7 +23,7 @@ export default function HeroBackgroundImage({ imageUrl }: HeroBackgroundImagePro
             src: e.currentTarget.src,
             error: e,
             originalUrl: imageUrl,
-            constructedUrl: getStrapiMediaUrl(imageUrl)
+            constructedUrl: getImageUrl(imageUrl)
           });
         }}
         placeholder="blur"

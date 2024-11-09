@@ -1,4 +1,4 @@
-import { fetchAPI, getStrapiMediaUrl } from '@/utils/api';
+import { fetchAPI, getImageUrl } from '@/utils/api';
 import { HeroSectionData } from '@/types/content';
 import ScrollButton from '@/components/ui/ScrollButton';
 import HeroBackgroundImage from './HeroBackgroundImage';

@@ -1,20 +1,23 @@
-import { StrapiError, StrapiResponse } from '@/types/strapi';
+import { StrapiError, StrapiMediaData, StrapiResponse } from '@/types/strapi';
 import { ProductCategoryData, FAQData, ContactSectionData } from '@/types/content';
+import { FileResourceData } from '@/types/common';
 import qs from 'qs';
+import { BaseProductCategory, HomeProductCategory } from '@/types/common';
 
-const getApiUrl = () => {
-  console.log('NODE_ENV:', process.env.NODE_ENV);
-  console.log('STRAPI_INTERNAL_URL:', process.env.STRAPI_INTERNAL_URL);
-  console.log('NEXT_PUBLIC_STRAPI_API_URL:', process.env.NEXT_PUBLIC_STRAPI_API_URL);
-  console.log('isServer:', typeof window === 'undefined');
-
-  // Server-side requests (both dev and prod)
-  if (typeof window === 'undefined') {
-    return process.env.STRAPI_INTERNAL_URL || 'http://strapi:1337';
-  }
+// New unified URL handler for api.ts
+const API_CONFIG = {
+  getBaseUrl: () => {
+    if (typeof window === 'undefined') {
+      return process.env.STRAPI_INTERNAL_URL || 'http://strapi:1337';
+    }
+    return process.env.NEXT_PUBLIC_STRAPI_API_URL || 'http://localhost:1337';
+  },
   
-  // Client-side requests (both dev and prod)
-  return process.env.NEXT_PUBLIC_STRAPI_API_URL || 'http://localhost:1337';
+  getMediaUrl: (path: string) => {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    return `${process.env.NEXT_PUBLIC_STRAPI_URL || 'http://strapi:1337'}${path}`;
+  }
 };
 
 const getApiToken = () => {
@@ -30,7 +33,7 @@ export async function fetchAPI<T>(
   endpoint: string,
   query?: Record<string, any>
 ): Promise<T> {
-  const apiUrl = getApiUrl();
+  const apiUrl = API_CONFIG.getBaseUrl();
   const token = getApiToken();  // Get token dynamically
 
   if (!apiUrl) {
@@ -61,8 +64,12 @@ export async function fetchAPI<T>(
     });
 
     if (!response.ok) {
-      console.error('API Error:', response.status, response.statusText);  // Debug log
       const errorData = await response.json();
+      console.error('API Error:', {
+        status: response.status,
+        statusText: response.statusText,
+        errorData
+      });
       throw new Error(
         errorData.error?.message || `HTTP error! status: ${response.status}`
       );
@@ -71,39 +78,108 @@ export async function fetchAPI<T>(
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error('API fetch error:', error);
-    throw error;  // Let the error propagate instead of returning empty data
+    console.error('API fetch error:', {
+      endpoint,
+      error,
+      query
+    });
+    throw error;
   }
 }
 
-export function getStrapiMediaUrl(url: string): string {
-  if (!url) return '';
-  
-  if (url.startsWith('http')) {
-    return url;
-  }
-  
-  // Always use localhost in development
-  if (process.env.NODE_ENV === 'development') {
-    return `http://localhost:1337${url}`;
-  }
-  
-  const baseUrl = typeof window === 'undefined' 
-    ? process.env.STRAPI_INTERNAL_URL 
-    : process.env.NEXT_PUBLIC_STRAPI_API_URL;
-    
-  return `${baseUrl}${url}`;
+interface ProductCategoriesParams {
+  pagination?: {
+    page?: number;
+    pageSize?: number;
+  };
+  populate?: string | {
+    Image?: any;
+    products?: any;
+  };
+  query?: string;
 }
 
-export async function getProductCategories(page = 1, pageSize = 9) {
-  return await fetchAPI<ProductCategoryData[]>('/api/product-categories', {
+export const getProductCategories = async (params?: ProductCategoriesParams): Promise<StrapiResponse<BaseProductCategory[]>> => {
+  try {
+    const response = await fetchAPI<StrapiResponse<BaseProductCategory[]>>('/api/product-categories', {
+      ...params
+    });
+
+    if (!response?.data) {
+      throw new Error('No data received from API');
+    }
+
+    const transformedData: StrapiResponse<BaseProductCategory[]> = {
+      data: response.data.map(item => ({
+        id: item.id,
+        attributes: {
+          documentId: (item as any).documentId,
+          Title: (item as any).Title,
+          Description: (item as any).Description,
+          slug: (item as any).slug,
+          Image: {
+            data: Array.isArray((item as any).Image) 
+              ? (item as any).Image.map((img: any) => ({
+                  id: img.id,
+                  attributes: {
+                    url: img.url,
+                    alternativeText: img.alternativeText || '',
+                    width: img.width,
+                    height: img.height,
+                    formats: img.formats || {}
+                  }
+                })) 
+              : []
+          },
+          products: (item as any).products ? {
+            data: ((item as any).products.data || []).map((product: any) => ({
+              id: product.id,
+              attributes: {
+                Name: product.attributes.Name,
+                ShortDescription: product.attributes.ShortDescription,
+                DetailedDescription: product.attributes.DetailedDescription,
+                Features: product.attributes.Features,
+                MainImage: product.attributes.MainImage,
+                GalleryImages: product.attributes.GalleryImages,
+                createdAt: product.attributes.createdAt,
+                updatedAt: product.attributes.updatedAt,
+                publishedAt: product.attributes.publishedAt,
+                CTALink: product.attributes.CTALink
+              }
+            }))
+          } : { data: [] },
+          createdAt: (item as any).createdAt,
+          updatedAt: (item as any).updatedAt,
+          publishedAt: (item as any).publishedAt
+        }
+      })),
+      meta: response.meta
+    };
+
+    return transformedData;
+  } catch (error) {
+    console.error('Error fetching product categories:', error);
+    throw error;
+  }
+};
+
+export const getHomeProductCategories = async (page = 1, pageSize = 9): Promise<StrapiResponse<HomeProductCategory[]>> => {
+  const query = {
     pagination: { page, pageSize },
-  });
-}
+    populate: {
+      Image: { populate: '*' }
+    }
+  };
+  return await fetchAPI('/api/product-categories', query);
+};
 
-export async function getFAQs() {
-  return await fetchAPI<StrapiResponse<FAQData[]>>('/api/faqs');
-}
+export const getFAQs = async (): Promise<StrapiResponse<FAQData[]>> => {
+  return await fetchAPI('/api/faqs', { populate: '*' });
+};
+
+export const getContactData = async (): Promise<StrapiResponse<ContactSectionData>> => {
+  return await fetchAPI('/api/contactsection', { populate: '*' });
+};
 
 export function sendContactForm(formData: {
   name: string;
@@ -120,28 +196,9 @@ export function sendContactForm(formData: {
   return response;
 }
 
-export async function getContactData() {
-  const query = {
-    populate: {
-      address: {
-        populate: '*'
-      },
-      contact_form: {
-        populate: '*'
-      }
-    }
-  };
-  return fetchAPI<StrapiResponse<ContactSectionData>>('/api/contactsection', query);
-}
+export const getFileResources = async (): Promise<StrapiResponse<FileResourceData[]>> => {
+  return await fetchAPI('/api/file-and-resources', { populate: '*' });
+};
 
-function checkEnvironmentVariables() {
-  const required = ['STRAPI_INTERNAL_URL', 'STRAPI_API_TOKEN'];
-  const missing = required.filter(key => !process.env[key]);
-  
-  if (missing.length > 0) {
-    console.error('Missing required environment variables:', missing);
-    return false;
-  }
-  return true;
-}
+export const getImageUrl = API_CONFIG.getMediaUrl;
 
