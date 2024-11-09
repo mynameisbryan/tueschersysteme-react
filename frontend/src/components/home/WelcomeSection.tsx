@@ -55,11 +55,6 @@ export default async function WelcomeSection() {
                   Catchimage?.formats?.small?.url ||
                   '';
 
-  console.log('[Welcome] Image URL:', imageUrl);
-  if (!imageUrl) {
-    console.warn('[Welcome] No image URL found in:', Catchimage);
-  }
-
   return (
     <section className="section bg-white">
       <div className="container-padding">
@@ -83,42 +78,33 @@ export default async function WelcomeSection() {
             </div>
           </div>
 
-          {/* Right side - Catch phrase + Image */}
+          {/* Right side - Card with Image and Text */}
           <div className="flex-1">
-            <div className="card p-6 md:p-8 
-                            bg-gradient-to-br from-white via-white to-tuscher-cyan/5
-                            border border-gray-100/80 
-                            rounded-2xl shadow-md hover:shadow-lg
-                            transition-all duration-300 hover:scale-[1.02]">
-              {/* Content wrapper */}
-              <div className="flex flex-col gap-6">
-                {/* Catch Phrase */}
-                <div className="space-y-3">
-                  <h3 className="text-xl md:text-2xl font-semibold text-tuscher-blue 
-                               flex items-center gap-2">
-                    {Catchheader}
-                  </h3>
-                  <p className="text-base text-gray-600/90 leading-relaxed">
-                    {Catchtext}
-                  </p>
+            <div className="card card-hover group">
+              {/* Image Container */}
+              {imageUrl && (
+                <div className="relative aspect-[16/9] overflow-hidden">
+                  <Image
+                    src={getStrapiMediaUrl(imageUrl)}
+                    alt="Welcome Illustration"
+                    fill
+                    className="object-cover transition-transform duration-300 
+                             group-hover:scale-105"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 500px"
+                    priority
+                    quality={85}
+                  />
                 </div>
-
-                {/* Image */}
-                {imageUrl && (
-                  <div className="relative aspect-[16/9] w-full">
-                    <div className="absolute inset-0 rounded-xl overflow-hidden">
-                      <Image
-                        src={getStrapiMediaUrl(imageUrl)}
-                        alt="Welcome Illustration"
-                        fill
-                        className="object-contain p-2"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 500px"
-                        priority
-                        quality={85}
-                      />
-                    </div>
-                  </div>
-                )}
+              )}
+              
+              {/* Text Content */}
+              <div className="p-6">
+                <h3 className="text-xl font-bold text-tuscher-blue mb-2">
+                  {Catchheader}
+                </h3>
+                <p className="text-tuscher-blue/70">
+                  {Catchtext}
+                </p>
               </div>
             </div>
           </div>
