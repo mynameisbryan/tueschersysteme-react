@@ -1,10 +1,10 @@
 {
-  "kind": "singleType",
-  "collectionName": "welcome_sections",
+  "kind": "collectionType",
+  "collectionName": "ueber_uns_x",
   "info": {
-    "singularName": "welcome-section",
-    "pluralName": "welcome-sections",
-    "displayName": "Welcome Section",
+    "singularName": "ueber-uns",
+    "pluralName": "ueber-uns-x",
+    "displayName": "Über Uns",
     "description": ""
   },
   "options": {
@@ -15,13 +15,14 @@
     "Title": {
       "type": "string"
     },
-    "Paragraphs": {
-      "type": "richtext"
+    "Description": {
+      "type": "text"
     },
-    "Catchtext": {
-      "type": "string"
+    "slug": {
+      "type": "uid",
+      "targetField": "Title"
     },
-    "Catchimage": {
+    "image": {
       "type": "media",
       "multiple": false,
       "required": false,
@@ -31,9 +32,6 @@
         "videos",
         "audios"
       ]
-    },
-    "Catchheader": {
-      "type": "string"
     }
   }
 }

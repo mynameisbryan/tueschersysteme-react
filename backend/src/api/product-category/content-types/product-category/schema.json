@@ -1,5 +1,5 @@
 {
-  "kind": "singleType",
+  "kind": "collectionType",
   "collectionName": "product_categories",
   "info": {
     "singularName": "product-category",

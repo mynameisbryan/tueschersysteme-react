@@ -1,3 +1,18 @@
+# Quick commands
+
+```bash
+docker compose logs -f strapi 
+docker compose logs frontend                 
+```
+
+```bash
+docker compose down           
+docker compose up -d --build
+```
+
+
+
+
 # Tüscher Systeme Website
 
 ## Project Overview

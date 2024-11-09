@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_features_feature_items",
+  "info": {
+    "displayName": "Feature Item",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "icon": {
+      "type": "enumeration",
+      "enum": [
+        "SHIELD",
+        "HOME",
+        "HEART",
+        "GEAR",
+        "CLOCK"
+      ]
+    }
+  }
+}

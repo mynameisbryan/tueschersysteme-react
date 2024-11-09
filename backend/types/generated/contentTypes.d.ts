@@ -369,9 +369,37 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiFaqFaq extends Struct.CollectionTypeSchema {
+  collectionName: 'faqs';
+  info: {
+    description: '';
+    displayName: 'FAQ';
+    pluralName: 'faqs';
+    singularName: 'faq';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    Answer: Schema.Attribute.Text;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::faq.faq'> &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    Question: Schema.Attribute.Text;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiHeroSectionHeroSection extends Struct.SingleTypeSchema {
   collectionName: 'hero_sections';
   info: {
+    description: '';
     displayName: 'Hero Section';
     pluralName: 'hero-sections';
     singularName: 'hero-section';
@@ -381,8 +409,7 @@ export interface ApiHeroSectionHeroSection extends Struct.SingleTypeSchema {
   };
   attributes: {
     BackgroundImage: Schema.Attribute.Media<
-      'images' | 'files' | 'videos' | 'audios',
-      true
+      'images' | 'files' | 'videos' | 'audios'
     >;
     CallToActionLink: Schema.Attribute.String;
     CallToActionText: Schema.Attribute.String;
@@ -390,6 +417,7 @@ export interface ApiHeroSectionHeroSection extends Struct.SingleTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     Description: Schema.Attribute.Text;
+    featureitems: Schema.Attribute.Component<'features.feature-item', true>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -405,7 +433,7 @@ export interface ApiHeroSectionHeroSection extends Struct.SingleTypeSchema {
 }
 
 export interface ApiProductCategoryProductCategory
-  extends Struct.SingleTypeSchema {
+  extends Struct.CollectionTypeSchema {
   collectionName: 'product_categories';
   info: {
     description: '';
@@ -465,10 +493,43 @@ export interface ApiTestTest extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiUeberUnsUeberUns extends Struct.CollectionTypeSchema {
+  collectionName: 'ueber_uns_x';
+  info: {
+    description: '';
+    displayName: '\u00DCber Uns';
+    pluralName: 'ueber-uns-x';
+    singularName: 'ueber-uns';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Description: Schema.Attribute.Text;
+    image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::ueber-uns.ueber-uns'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    slug: Schema.Attribute.UID<'Title'>;
+    Title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiWelcomeSectionWelcomeSection
   extends Struct.SingleTypeSchema {
   collectionName: 'welcome_sections';
   info: {
+    description: '';
     displayName: 'Welcome Section';
     pluralName: 'welcome-sections';
     singularName: 'welcome-section';
@@ -477,6 +538,11 @@ export interface ApiWelcomeSectionWelcomeSection
     draftAndPublish: true;
   };
   attributes: {
+    Catchheader: Schema.Attribute.String;
+    Catchimage: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios'
+    >;
+    Catchtext: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1000,9 +1066,11 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
+      'api::faq.faq': ApiFaqFaq;
       'api::hero-section.hero-section': ApiHeroSectionHeroSection;
       'api::product-category.product-category': ApiProductCategoryProductCategory;
       'api::test.test': ApiTestTest;
+      'api::ueber-uns.ueber-uns': ApiUeberUnsUeberUns;
       'api::welcome-section.welcome-section': ApiWelcomeSectionWelcomeSection;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;

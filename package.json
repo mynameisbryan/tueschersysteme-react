@@ -12,5 +12,9 @@
     "stop": "docker-compose down",
     "frontend": "cd frontend && npm run dev",
     "backend": "cd backend && npm run develop"
+  },
+  "dependencies": {
+    "@headlessui/react": "^2.2.0",
+    "@heroicons/react": "^2.1.5"
   }
 }

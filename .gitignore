@@ -10,10 +10,11 @@
 !**/.yarn/versions
 
 # Build
-**/build
-**/dist
-**/.next
-**/out
+frontend/.next/
+frontend/out/
+frontend/build/
+backend/build/
+backend/dist/
 
 # Environment
 .env*
@@ -31,12 +32,12 @@
 *.swo
 
 # Strapi specific
-**/.strapi
-**/.strapi-updater.json
-**/license.txt
-**/exports
-**/public/uploads/*
-!**/public/uploads/.gitkeep
+backend/.strapi
+backend/.strapi-updater.json
+backend/license.txt
+backend/exports
+backend/public/uploads/*
+!backend/public/uploads/.gitkeep
 
 # Database
 *.sqlite*
