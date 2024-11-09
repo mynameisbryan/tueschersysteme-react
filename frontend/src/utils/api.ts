@@ -20,68 +20,76 @@ const API_CONFIG = {
   }
 };
 
-const getApiToken = () => {
-  if (typeof window === 'undefined') {
-    // Server-side
-    return process.env.STRAPI_API_TOKEN;
+const getToken = async () => {
+  const token = typeof window === 'undefined' 
+    ? process.env.STRAPI_API_TOKEN 
+    : process.env.NEXT_PUBLIC_STRAPI_TOKEN;
+    
+  if (!token) {
+    console.warn('[API] No API token found');
+    throw new Error('API token is not configured');
   }
-  // Client-side
-  return process.env.NEXT_PUBLIC_STRAPI_TOKEN;
+  
+  return token;
 };
 
 export async function fetchAPI<T>(
   endpoint: string,
-  query?: Record<string, any>
+  options: Record<string, any> = {}
 ): Promise<T> {
-  const apiUrl = API_CONFIG.getBaseUrl();
-  const token = getApiToken();  // Get token dynamically
+  const baseUrl = API_CONFIG.getBaseUrl();
+  const token = await getToken();
+  
+  const queryString = options ? `?${qs.stringify(options)}` : '';
+  const url = `${baseUrl}${endpoint}${queryString}`;
 
-  if (!apiUrl) {
-    throw new Error('Strapi API URL is not defined');
-  }
-
-  const queryString = query ? `?${qs.stringify(query)}` : '';
-  const url = `${apiUrl}${endpoint}${queryString}`;
-
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
-  };
-
-  if (token) {
-    headers.Authorization = `Bearer ${token}`;
-    console.log('Using token:', token.substring(0, 10) + '...');  // Debug log
-  } else {
-    console.warn('No API token found');  // Debug log
-  }
-
-  console.log('Fetching URL:', url);
-  console.log('Headers:', headers);  // Debug log
+  console.log('[API] Request details:', {
+    endpoint,
+    baseUrl,
+    hasToken: !!token,
+    tokenPrefix: token ? token.substring(0, 10) + '...' : null,
+    queryParams: queryString,
+    timestamp: new Date().toISOString()
+  });
 
   try {
     const response = await fetch(url, {
-      headers,
-      cache: 'no-store',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      cache: 'no-store'
+    });
+
+    console.log('[API] Response status:', {
+      endpoint,
+      status: response.status,
+      ok: response.ok,
+      statusText: response.statusText
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      console.error('API Error:', {
+      const errorText = await response.text();
+      console.error('[API] Response error:', {
         status: response.status,
         statusText: response.statusText,
-        errorData
+        body: errorText,
+        url: url.replace(token, '***')
       });
-      throw new Error(
-        errorData.error?.message || `HTTP error! status: ${response.status}`
-      );
+      throw new Error(`API request failed: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();
-    return data;
+    return data as T;
   } catch (error) {
-    console.error('API fetch error:', {
+    console.error('[API] Fetch error:', {
       endpoint,
-      error,
-      query
+      error: error instanceof Error ? {
+        name: error.name,
+        message: error.message,
+        stack: error.stack
+      } : String(error),
+      url: url.replace(token, '***')
     });
     throw error;
   }
@@ -92,73 +100,57 @@ interface ProductCategoriesParams {
     page?: number;
     pageSize?: number;
   };
-  populate?: string | {
-    Image?: any;
-    products?: any;
+  populate?: {
+    Image: {
+      fields: ['url', 'alternativeText', 'width', 'height', 'formats']
+    };
+    products: {
+      populate: {
+        MainImage: {
+          fields: ['url', 'alternativeText', 'width', 'height', 'formats']
+        }
+      }
+    };
   };
-  query?: string;
 }
 
-export const getProductCategories = async (params?: ProductCategoriesParams): Promise<StrapiResponse<BaseProductCategory[]>> => {
+export const getProductCategories = async (
+  query?: ProductCategoriesParams
+): Promise<StrapiResponse<BaseProductCategory[]>> => {
   try {
-    const response = await fetchAPI<StrapiResponse<BaseProductCategory[]>>('/api/product-categories', {
-      ...params
-    });
-
+    const response = await fetchAPI<StrapiResponse<any>>('/api/product-categories', query);
+    
     if (!response?.data) {
-      throw new Error('No data received from API');
+      throw new Error('Invalid API response structure');
     }
 
+    console.log('[API] Product categories raw response:', {
+      count: response.data.length,
+      firstItem: response.data[0] ? {
+        id: response.data[0].id,
+        title: response.data[0].Title
+      } : null
+    });
+
     const transformedData: StrapiResponse<BaseProductCategory[]> = {
-      data: response.data.map(item => ({
+      data: response.data.map((item: any) => ({
         id: item.id,
-        attributes: {
-          documentId: (item as any).documentId,
-          Title: (item as any).Title,
-          Description: (item as any).Description,
-          slug: (item as any).slug,
-          Image: {
-            data: Array.isArray((item as any).Image) 
-              ? (item as any).Image.map((img: any) => ({
-                  id: img.id,
-                  attributes: {
-                    url: img.url,
-                    alternativeText: img.alternativeText || '',
-                    width: img.width,
-                    height: img.height,
-                    formats: img.formats || {}
-                  }
-                })) 
-              : []
-          },
-          products: (item as any).products ? {
-            data: ((item as any).products.data || []).map((product: any) => ({
-              id: product.id,
-              attributes: {
-                Name: product.attributes.Name,
-                ShortDescription: product.attributes.ShortDescription,
-                DetailedDescription: product.attributes.DetailedDescription,
-                Features: product.attributes.Features,
-                MainImage: product.attributes.MainImage,
-                GalleryImages: product.attributes.GalleryImages,
-                createdAt: product.attributes.createdAt,
-                updatedAt: product.attributes.updatedAt,
-                publishedAt: product.attributes.publishedAt,
-                CTALink: product.attributes.CTALink
-              }
-            }))
-          } : { data: [] },
-          createdAt: (item as any).createdAt,
-          updatedAt: (item as any).updatedAt,
-          publishedAt: (item as any).publishedAt
-        }
+        documentId: item.documentId || '',
+        Title: item.Title || '',
+        Description: item.Description || '',
+        slug: item.slug || '',
+        Image: Array.isArray(item.Image) ? item.Image : [],
+        products: [],  // We'll handle products in a separate query
+        createdAt: item.createdAt || '',
+        updatedAt: item.updatedAt || '',
+        publishedAt: item.publishedAt || ''
       })),
       meta: response.meta
     };
 
     return transformedData;
   } catch (error) {
-    console.error('Error fetching product categories:', error);
+    console.error('[API] getProductCategories error:', error);
     throw error;
   }
 };

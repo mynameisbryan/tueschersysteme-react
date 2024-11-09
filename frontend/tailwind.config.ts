@@ -8,7 +8,13 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      backgroundImage: {
+        'radial-gradient': 'radial-gradient(circle at center, transparent 50%, white 100%)',
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+      },
       colors: {
+        background: 'var(--background)',
+        foreground: 'var(--foreground)',
         tuscher: {
           blue: {
             DEFAULT: "#012970",
@@ -34,7 +40,9 @@ const config: Config = {
       }
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/typography'),
+  ],
 };
 
 export default config;

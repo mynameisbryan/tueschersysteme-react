@@ -1,4 +1,4 @@
-import { StrapiBaseAttributes, StrapiImage, StrapiMedia } from './strapi';
+import { StrapiBaseAttributes, StrapiImage, StrapiMedia, StrapiMediaFormat } from './strapi';
 
 export interface FileResourceData {
   id: number;
@@ -19,18 +19,15 @@ export interface Product {
     Name: string;
     ShortDescription: string;
     DetailedDescription?: string;
-    MainImage: {
-      data: {
-        attributes: {
-          url: string;
+    Features?: string[];
+    MainImage?: {
+      data?: {
+        attributes?: {
+          url?: string;
           alternativeText?: string;
         };
       };
     };
-    Features: string[];
-    createdAt: string;
-    updatedAt: string;
-    publishedAt: string;
   };
 }
 
@@ -56,10 +53,38 @@ export interface HomeProductCategory {
 // Für die Products-Page (mit products)
 export interface BaseProductCategory {
   id: number;
-  attributes: BaseProductCategoryAttributes & {
-    documentId?: string;
-    products: {
-      data: Product[];
+  documentId: string;
+  Title: string;
+  Description: string;
+  slug: string;
+  Image: Array<{
+    id: number;
+    url: string;
+    alternativeText: string | null;
+    width: number;
+    height: number;
+    formats?: {
+      [key: string]: StrapiMediaFormat;
     };
+  }>;
+  products: {
+    data: Array<{
+      id: number;
+      attributes: {
+        Name: string;
+        ShortDescription: string;
+        MainImage?: {
+          data?: {
+            attributes?: {
+              url?: string;
+            };
+          };
+        };
+        Features?: string[];
+      };
+    }>;
   };
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
 } 

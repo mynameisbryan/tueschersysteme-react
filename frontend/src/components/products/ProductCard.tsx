@@ -32,7 +32,7 @@ export default function ProductCard({
         />
         <div className="absolute top-4 right-4">
           <span className="px-3 py-1 text-sm bg-tuscher-blue/90 text-white rounded-full">
-            {category}
+            {category.replace(/-/g, ' ')}
           </span>
         </div>
       </div>

@@ -148,4 +148,59 @@ export interface StrapiMediaFormats {
   medium?: StrapiMediaFormat;
   small?: StrapiMediaFormat;
   thumbnail?: StrapiMediaFormat;
+}
+
+export interface ProductResponse {
+  id: number;
+  attributes: {
+    Name: string;
+    ShortDescription: string;
+    DetailedDescription: string;
+    Features: string[];
+    MainImage: {
+      data: {
+        attributes: {
+          url: string;
+          alternativeText: string;
+        }
+      } | null;
+    };
+    product_category: {
+      id: number;
+      Title: string;
+      slug: string;
+    };
+  };
+}
+
+export interface RawProductResponse {
+  data: Array<{
+    id: number;
+    attributes: {
+      Name: string;
+      ShortDescription: string;
+      DetailedDescription?: string;
+      Features?: string[];
+      MainImage?: {
+        data?: {
+          attributes?: {
+            url: string;
+            alternativeText?: string;
+          };
+        };
+      };
+      product_category?: {
+        slug: string;
+        Title: string;
+      };
+    };
+  }>;
+  meta: {
+    pagination: {
+      page: number;
+      pageSize: number;
+      pageCount: number;
+      total: number;
+    };
+  };
 } 
