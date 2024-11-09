@@ -1,9 +1,9 @@
 import { fetchAPI, getStrapiMediaUrl } from '@/utils/api';
 import { HeroSectionData } from '@/types/content';
-import Link from 'next/link';
-import qs from 'qs';
-import FeatureItem from '../home/FeatureItem';
+import ScrollButton from '@/components/ui/ScrollButton';
 import HeroBackgroundImage from './HeroBackgroundImage';
+import FeatureItem from './FeatureItem';
+import qs from 'qs';
 
 async function getHeroContent(): Promise<{ data: HeroSectionData } | null> {
   try {
@@ -93,12 +93,12 @@ export default async function HeroSection() {
               {Description}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2">
-              <Link href={CallToActionLink} className="btn-primary-light">
+              <ScrollButton href="#contact-section" className="btn-primary-light">
                 {CallToActionText}
-              </Link>
-              <Link href="/contact" className="btn-outline-light">
-                Kontakt
-              </Link>
+              </ScrollButton>
+              <ScrollButton href="#products-section" className="btn-outline-light">
+                Unsere Produkte
+              </ScrollButton>
             </div>
           </div>
           

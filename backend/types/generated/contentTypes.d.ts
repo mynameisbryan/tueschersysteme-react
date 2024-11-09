@@ -464,6 +464,38 @@ export interface ApiFaqFaq extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiFileAndResourceFileAndResource
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'file_and_resources';
+  info: {
+    displayName: 'File & Resource';
+    pluralName: 'file-and-resources';
+    singularName: 'file-and-resource';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    File: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    FileType: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::file-and-resource.file-and-resource'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    Size: Schema.Attribute.Decimal;
+    Title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiHeroSectionHeroSection extends Struct.SingleTypeSchema {
   collectionName: 'hero_sections';
   info: {
@@ -527,9 +559,51 @@ export interface ApiProductCategoryProductCategory
       'api::product-category.product-category'
     > &
       Schema.Attribute.Private;
+    products: Schema.Attribute.Relation<'oneToMany', 'api::product.product'>;
     publishedAt: Schema.Attribute.DateTime;
     slug: Schema.Attribute.UID<'Title'>;
     Title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiProductProduct extends Struct.CollectionTypeSchema {
+  collectionName: 'products';
+  info: {
+    displayName: 'Product';
+    pluralName: 'products';
+    singularName: 'product';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    CTALink: Schema.Attribute.String;
+    DetailedDescription: Schema.Attribute.RichText;
+    Features: Schema.Attribute.JSON;
+    GalleryImages: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios',
+      true
+    >;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::product.product'
+    > &
+      Schema.Attribute.Private;
+    MainImage: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    Name: Schema.Attribute.String;
+    product_category: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::product-category.product-category'
+    >;
+    publishedAt: Schema.Attribute.DateTime;
+    ShortDescription: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1137,8 +1211,10 @@ declare module '@strapi/strapi' {
       'api::contact-form.contact-form': ApiContactFormContactForm;
       'api::contactsection.contactsection': ApiContactsectionContactsection;
       'api::faq.faq': ApiFaqFaq;
+      'api::file-and-resource.file-and-resource': ApiFileAndResourceFileAndResource;
       'api::hero-section.hero-section': ApiHeroSectionHeroSection;
       'api::product-category.product-category': ApiProductCategoryProductCategory;
+      'api::product.product': ApiProductProduct;
       'api::test.test': ApiTestTest;
       'api::ueber-uns.ueber-uns': ApiUeberUnsUeberUns;
       'api::welcome-section.welcome-section': ApiWelcomeSectionWelcomeSection;

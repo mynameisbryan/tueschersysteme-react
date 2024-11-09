@@ -9,7 +9,7 @@ ARG NEXT_PUBLIC_STRAPI_TOKEN
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies with legacy peer deps to avoid conflicts
+# Install ALL dependencies including dev dependencies
 RUN npm install --legacy-peer-deps
 
 # Install sharp for image optimization
@@ -18,24 +18,21 @@ RUN npm install sharp
 # Install zod
 RUN npm install zod
 
-# Install ESLint plugins with specific versions that match Next.js requirements
+# Install ESLint plugins with specific versions
 RUN npm install --save-dev --legacy-peer-deps \
     @typescript-eslint/eslint-plugin@6.21.0 \
     @typescript-eslint/parser@6.21.0
 
-# Copy the rest of the application
-COPY . .
-
 # Set environment variables
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV NODE_ENV=production
+ENV NODE_ENV=development
 ENV NEXT_PUBLIC_STRAPI_API_URL=${NEXT_PUBLIC_STRAPI_API_URL}
 ENV STRAPI_INTERNAL_URL=http://strapi:1337
 ENV STRAPI_API_TOKEN=${STRAPI_API_TOKEN}
 ENV NEXT_PUBLIC_STRAPI_TOKEN=${STRAPI_API_TOKEN}
 
-# Build the application
-RUN npm run build
+# No COPY . . because we're using volumes
+# No build step because we're running in dev mode
 
 EXPOSE 3000
-CMD ["npm", "start"]
+CMD ["npm", "run", "dev"]

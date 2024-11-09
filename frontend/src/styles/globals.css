@@ -43,39 +43,91 @@
 
   /* Base Button */
   .btn {
-    @apply inline-flex items-center justify-center 
-           px-6 py-3 rounded 
+    @apply relative inline-flex items-center justify-center 
+           px-6 py-3 rounded-lg 
            transition-all duration-300
-           relative overflow-hidden
-           w-full sm:w-auto;
+           relative overflow-hidden;
   }
 
-  /* Primary Button */
-  .btn-primary {
-    @apply btn 
-           bg-tuscher-blue text-white 
-           hover:bg-tuscher-blue-light;
+  /* Button Effects */
+  .btn-hover-effects {
+    @apply before:absolute before:inset-0 before:z-0
+           before:opacity-0 before:transition-opacity before:duration-300
+           before:bg-gradient-to-r before:from-[var(--color-primary)]/0 before:via-[var(--color-primary)]/20 before:to-[var(--color-primary)]/0
+           after:absolute after:inset-0 after:z-0
+           after:opacity-0 after:transition-opacity after:duration-300
+           after:bg-[radial-gradient(circle_at_center,var(--color-primary)/0.1_0%,transparent_70%)];
   }
 
-  /* Light Primary Button */
+  .btn-hover-effects:hover::before,
+  .btn-hover-effects:hover::after {
+    @apply opacity-100;
+  }
+
+  /* Button Variants */
   .btn-primary-light {
-    @apply btn 
-           bg-white text-tuscher-blue 
-           font-semibold rounded-full
-           shadow-lg hover:shadow-xl
-           hover:bg-gray-50/90
-           hover:scale-[1.02];
+    @apply btn bg-white text-[var(--color-navy)]
+           shadow-lg hover:shadow-[0_0_20px_var(--color-primary-glow)]
+           hover:bg-white active:scale-95;
   }
 
-  /* Light Outline Button */
   .btn-outline-light {
-    @apply btn 
-           bg-transparent
-           text-white font-semibold 
-           rounded-full
+    @apply btn bg-transparent text-white 
            border-2 border-white
-           hover:bg-white hover:text-tuscher-blue
-           hover:scale-[1.02];
+           hover:border-[var(--color-primary)]
+           hover:shadow-[0_0_20px_var(--color-primary-glow)]
+           active:scale-95;
+  }
+
+  /* Input Styles */
+  .input-base {
+    @apply block w-full rounded-lg border-2 
+           px-4 py-3 
+           transition-all duration-200
+           focus:outline-none focus:ring-0;
+  }
+
+  .input-light {
+    @apply input-base
+           border-white/20 
+           bg-white/90
+           text-[var(--color-navy)]
+           placeholder:text-[var(--color-navy)]/50
+           focus:border-[var(--color-primary)]
+           focus:bg-white
+           focus:shadow-[0_0_15px_var(--color-primary-glow)];
+  }
+
+  .input-dark {
+    @apply input-base
+           border-[var(--color-navy)]/20 
+           bg-white/90
+           text-[var(--color-navy)]
+           placeholder:text-[var(--color-navy)]/50
+           focus:border-[var(--color-primary)]
+           focus:bg-white
+           focus:shadow-[0_0_15px_var(--color-primary-glow)];
+  }
+
+  /* Floating Label */
+  .floating-label {
+    @apply absolute left-3 px-1 
+           bg-white
+           text-sm text-[var(--color-navy)]/70
+           transition-all duration-200
+           transform -translate-y-1/2;
+  }
+
+  .input-group {
+    @apply relative;
+  }
+
+  .input-group input:placeholder-shown + .floating-label {
+    @apply translate-y-1/2 text-base;
+  }
+
+  .input-group input:focus + .floating-label {
+    @apply -translate-y-1/2 text-sm text-[var(--color-primary)];
   }
 
   /* Navigation Components */
@@ -234,10 +286,36 @@
            shadow-xl
            transition-all duration-300;
   }
+
+  /* Add to your @layer components section */
+  .btn-hover-effect {
+    @apply relative overflow-hidden;
+  }
+
+  .btn-hover-effect::after {
+    @apply absolute bottom-0 right-0 w-8 h-20 -mt-12 
+           transition-all duration-300 
+           transform translate-x-12 rotate-12 
+           group-hover:-translate-x-40 ease-out;
+    content: '';
+  }
+
+  .btn-hover-effect.light::after {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .btn-hover-effect.cyan::after {
+    background-color: rgba(var(--color-primary), 0.1);
+  }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 90px; /* Match the offset */
 }

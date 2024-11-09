@@ -77,7 +77,7 @@ export default async function ProductCategories() {
     }
 
     return (
-      <section className="py-16 md:py-24">
+      <section id="products-section" className="section bg-white">
         <div className="container">
           <h2 className="section-title">Unsere Produkte</h2>
           

@@ -9,7 +9,12 @@ export const colors = {
       100: '#cce0ff',
       200: '#99c2ff',
       800: '#001a4d',
-      900: '#001133'
+      900: '#001133',
+      overlay: {
+        light: 'rgba(3, 13, 38, 0.5)',
+        medium: 'rgba(3, 13, 38, 0.8)',
+        dark: 'rgba(3, 13, 38, 0.95)'
+      }
     },
     cyan: {
       DEFAULT: '#7CDDBA',
@@ -22,7 +27,9 @@ export const colors = {
     },
     gray: {
       DEFAULT: '#f9f9f9',
-      dark: '#09203B'
+      dark: '#09203B',
+      400: '#9ca3af',
+      700: '#374151'
     }
   }
 } as const; 

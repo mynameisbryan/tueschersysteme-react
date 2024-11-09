@@ -8,16 +8,12 @@ const getApiUrl = () => {
   console.log('NEXT_PUBLIC_STRAPI_API_URL:', process.env.NEXT_PUBLIC_STRAPI_API_URL);
   console.log('isServer:', typeof window === 'undefined');
 
-  // For local development, always use localhost
-  if (process.env.NODE_ENV === 'development') {
-    return 'http://localhost:1337';
-  }
-
-  // For production/Docker environment
+  // Server-side requests (both dev and prod)
   if (typeof window === 'undefined') {
     return process.env.STRAPI_INTERNAL_URL || 'http://strapi:1337';
   }
   
+  // Client-side requests (both dev and prod)
   return process.env.NEXT_PUBLIC_STRAPI_API_URL || 'http://localhost:1337';
 };
 

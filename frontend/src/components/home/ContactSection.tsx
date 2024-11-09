@@ -108,7 +108,7 @@ export default function ContactSection({ initialData }: ContactSectionProps) {
   };
 
   return (
-    <section className="relative w-full pb-16 md:pb-24">
+    <section id="contact-section" className="section bg-white">
       {/* Header */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-16 lg:pt-24 pb-16">
         <div className="text-center max-w-2xl mx-auto">

@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import MobileMenu from './MobileMenu'
+import NavigationButton from '@/components/ui/NavigationButton'
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -59,13 +60,13 @@ export default function Header() {
               <span className="relative z-10">Produkte</span>
               <span className="absolute inset-x-0 bottom-0 h-0.5 bg-[#7CDDBA] transform origin-left scale-x-0 transition-transform duration-200 ease-out group-hover:scale-x-100 shadow-[0_2px_8px_rgba(124,221,186,0.6)]" />
             </Link>
-            <Link 
-              href="/contact" 
+            <NavigationButton 
+              href="#contact-section" 
               className="relative inline-flex items-center justify-center px-6 py-2 overflow-hidden font-medium text-[#7CDDBA] bg-[#030d26] rounded-lg hover:bg-[#051633] transition-all duration-200 ease-out group border border-[#7CDDBA] shadow-[0_4px_12px_rgba(124,221,186,0.2)] hover:shadow-[0_4px_16px_rgba(124,221,186,0.4)]"
             >
               <span className="relative">Kontakt</span>
               <span className="absolute bottom-0 right-0 w-8 h-20 -mt-12 transition-all duration-300 transform translate-x-12 bg-[#7CDDBA] opacity-10 rotate-12 group-hover:-translate-x-40 ease-out"></span>
-            </Link>
+            </NavigationButton>
           </nav>
 
           <button 
