@@ -1,0 +1,213 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #ffffff;
+    --foreground: #171717;
+    --header-height: 80px;
+    
+    /* Tuscher Colors */
+    --color-primary: #7CDDBA;
+    --color-primary-dark: #68c5a4;
+    --color-primary-glow: rgba(124,221,186,0.6);
+    --color-navy: #030d26;
+    --color-navy-light: #051633;
+    
+    touch-action: pan-x pan-y;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background: #ffffff;
+      --foreground: #ededed;
+    }
+  }
+
+  body {
+    @apply bg-background text-tuscher-text font-sans antialiased;
+  }
+}
+
+@layer components {
+  /* Layout Components */
+  .container {
+    @apply max-w-7xl mx-auto px-4;
+  }
+
+  .container-padding {
+    @apply px-4 mx-auto max-w-7xl;
+  }
+
+  /* Base Button */
+  .btn {
+    @apply inline-flex items-center justify-center 
+           px-6 py-3 rounded 
+           transition-all duration-300
+           relative overflow-hidden
+           w-full sm:w-auto;
+  }
+
+  /* Primary Button */
+  .btn-primary {
+    @apply btn 
+           bg-tuscher-blue text-white 
+           hover:bg-tuscher-blue-light;
+  }
+
+  /* Light Primary Button */
+  .btn-primary-light {
+    @apply btn 
+           bg-white text-tuscher-blue 
+           font-semibold rounded-full
+           shadow-lg hover:shadow-xl
+           hover:bg-gray-50/90
+           hover:scale-[1.02];
+  }
+
+  /* Light Outline Button */
+  .btn-outline-light {
+    @apply btn 
+           bg-transparent
+           text-white font-semibold 
+           rounded-full
+           border-2 border-white
+           hover:bg-white hover:text-tuscher-blue
+           hover:scale-[1.02];
+  }
+
+  /* Navigation Components */
+  .nav-link {
+    @apply text-tuscher-blue px-3 py-2 rounded transition-colors duration-300
+    hover:bg-tuscher-blue hover:text-white;
+  }
+
+  .nav-link.active {
+    @apply font-bold;
+  }
+
+  /* Section Components */
+  .section {
+    @apply py-16;
+  }
+
+  .section-title {
+    @apply text-2xl md:text-3xl font-bold text-tuscher-blue text-center mb-8
+    after:content-[''] after:block after:w-[155px] after:h-[1px] 
+    after:bg-tuscher-blue-light after:mx-auto after:mt-2;
+  }
+
+  /* Card Components */
+  .card {
+    @apply bg-white rounded-lg shadow-md overflow-hidden 
+           transition-all duration-300 
+           relative;
+  }
+
+  .card-hover {
+    @apply hover:shadow-lg 
+           hover:scale-105 
+           hover:z-10
+           before:hidden
+           after:hidden;
+  }
+
+  /* Hero Components */
+  .hero-section {
+    @apply relative h-[50vh] mt-24;
+  }
+
+  .hero-content {
+    @apply absolute inset-0 flex items-center;
+  }
+
+  .hero-text {
+    @apply max-w-2xl text-white space-y-6;
+  }
+
+  /* Add this to your existing components layer */
+  .gradient-line {
+    @apply relative h-[3px] w-full overflow-hidden;
+  }
+
+  .gradient-line-inner {
+    @apply absolute inset-0 bg-gradient-to-r from-transparent via-[#7cddba] to-transparent opacity-70;
+    transform-origin: center;
+    will-change: transform;
+  }
+
+  .gradient-line-animation {
+    background: linear-gradient(
+      90deg, 
+      rgba(124,221,186,0.2) 0%,
+      var(--color-primary) 20%,
+      var(--color-primary-dark) 40%,
+      var(--color-primary) 60%,
+      var(--color-primary-dark) 80%,
+      rgba(124,221,186,0.2) 100%
+    );
+    animation: gradientFlow 8s ease infinite;
+    background-size: 400% 100%;
+  }
+
+  @keyframes gradientFlow {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  /* Glass effect card */
+  .glass-card {
+    @apply bg-white/10 backdrop-blur-md rounded-2xl 
+           p-6 md:p-8
+           border border-white/20 
+           shadow-xl
+           transition-all duration-300
+           hover:scale-[1.02]
+           hover:z-10
+           before:hidden
+           after:hidden
+           relative;
+  }
+
+  /* Hero section specific */
+  .hero-gradient {
+    @apply bg-gradient-to-br from-tuscher-blue/90 via-tuscher-blue/70 to-transparent;
+  }
+
+  /* Hero overlay variants */
+  .hero-overlay-light {
+    @apply absolute inset-0 bg-gradient-to-br 
+           from-tuscher-blue/50 
+           via-tuscher-blue/20 
+           to-tuscher-blue/30;
+  }
+
+  .hero-overlay-medium {
+    @apply absolute inset-0 bg-gradient-to-br 
+           from-tuscher-blue/90 
+           via-tuscher-blue/80 
+           to-tuscher-blue/40;
+  }
+
+  .hero-overlay-dark {
+    @apply absolute inset-0 bg-gradient-to-br 
+           from-tuscher-blue/95 
+           via-tuscher-blue/85 
+           to-tuscher-blue/50;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
