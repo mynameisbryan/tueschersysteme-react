@@ -27,7 +27,11 @@ export default function ProductCard({
   });
 
   return (
-    <div className="group cursor-pointer bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
+    <div 
+      role="article"
+      tabIndex={0}
+      className="group cursor-pointer bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-tuscher-blue focus:ring-offset-2"
+    >
       <div className="relative aspect-[4/3] overflow-hidden rounded-t-xl bg-gray-100">
         {imageUrl ? (
           <NextImage
