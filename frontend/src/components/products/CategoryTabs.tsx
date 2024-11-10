@@ -1,6 +1,6 @@
 'use client';
 
-import { CategoryResponse } from '@/utils/productApi';
+import { CategoryResponse } from '@/types/strapi';
 import { cn } from '@/utils/cn';
 
 interface CategoryTabsProps {
@@ -10,7 +10,23 @@ interface CategoryTabsProps {
 }
 
 export default function CategoryTabs({ categories, activeSlug, onCategoryChange }: CategoryTabsProps) {
+  console.log('[CategoryTabs] Rendering:', JSON.stringify({
+    categoriesCount: categories?.length,
+    activeSlug,
+    availableSlugs: categories?.map(c => c.slug)
+  }, null, 2));
+
+  const handleCategoryClick = (slug: string) => {
+    console.log('[CategoryTabs] Category clicked:', {
+      clickedSlug: slug,
+      currentActiveSlug: activeSlug,
+      availableSlugs: categories.map(c => ({ slug: c.slug, title: c.Title }))
+    });
+    onCategoryChange(slug);
+  };
+
   if (!categories?.length) {
+    console.warn('[CategoryTabs] No categories available');
     return null;
   }
 
@@ -21,7 +37,7 @@ export default function CategoryTabs({ categories, activeSlug, onCategoryChange 
           {categories.map((category) => (
             <button
               key={category.id}
-              onClick={() => onCategoryChange(category.slug || '')}
+              onClick={() => handleCategoryClick(category.slug || '')}
               className={cn(
                 "px-6 py-3 whitespace-nowrap rounded-lg transition-all duration-200",
                 "font-medium text-base",

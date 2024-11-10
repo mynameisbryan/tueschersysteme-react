@@ -1,38 +1,54 @@
-import Image from 'next/image';
+import { default as NextImage } from 'next/image';
 import { cn } from '@/utils/cn';
 
 interface ProductCardProps {
   title: string;
   description: string;
-  image?: string;
+  imageUrl: string | null;
+  imageAlt: string;
   features: string[];
   category: string;
-  onClick?: () => void;
 }
 
 export default function ProductCard({ 
   title, 
   description, 
-  image = '/images/placeholder.jpg', 
+  imageUrl, 
+  imageAlt,
   features,
   category,
-  onClick 
 }: ProductCardProps) {
+  // Debug logs for image handling
+  console.log('[ProductCard] Rendering card:', {
+    title,
+    hasImageUrl: !!imageUrl,
+    imageUrl,
+    imageAlt
+  });
+
   return (
-    <div 
-      onClick={onClick}
-      className="group cursor-pointer bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300"
-    >
-      <div className="relative aspect-[4/3] overflow-hidden rounded-t-xl">
-        <Image
-          src={image}
-          alt={title}
-          fill
-          className="object-cover transition-transform duration-300 group-hover:scale-105"
-        />
+    <div className="group cursor-pointer bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
+      <div className="relative aspect-[4/3] overflow-hidden rounded-t-xl bg-gray-100">
+        {imageUrl ? (
+          <NextImage
+            src={imageUrl}
+            alt={imageAlt}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            priority={false}
+            quality={75}
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <div className="text-gray-400">
+              Kein Bild verfügbar
+            </div>
+          </div>
+        )}
         <div className="absolute top-4 right-4">
           <span className="px-3 py-1 text-sm bg-tuscher-blue/90 text-white rounded-full">
-            {category.replace(/-/g, ' ')}
+            {category}
           </span>
         </div>
       </div>

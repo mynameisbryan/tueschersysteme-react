@@ -11,8 +11,8 @@ COPY package*.json ./
 COPY .npmrc ./
 
 # Install dependencies with clean install
-RUN npm ci && \
-    npm install sharp
+RUN npm ci && npm install sharp
+
 
 # Create necessary directories and set permissions
 RUN mkdir -p .next && \

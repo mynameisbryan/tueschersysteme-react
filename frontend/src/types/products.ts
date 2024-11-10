@@ -1,5 +1,38 @@
 import { Product, BaseProductCategory } from './common';
 
+export interface TransformedProductsResponse {
+  data: {
+    id: number;
+    attributes: {
+      Name: string;
+      ShortDescription?: string;
+      MainImage?: {
+        data?: {
+          attributes?: {
+            url?: string;
+          };
+        };
+      };
+      product_category?: {
+        data?: {
+          attributes?: {
+            Title?: string;
+            slug?: string;
+          };
+        };
+      };
+    };
+  }[];
+  meta: {
+    pagination?: {
+      page: number;
+      pageSize: number;
+      pageCount: number;
+      total: number;
+    };
+  };
+}
+
 export type { Product };
 export type ProductCategory = BaseProductCategory;
 

@@ -1,26 +1,14 @@
-import { fetchAPI, getImageUrl } from '@/utils/api';
+import { fetchAPI, getImageUrl, getWelcomeContent as fetchWelcomeContent } from '@/utils/api';
 import { WelcomeSectionData } from '@/types/content';
 import Image from 'next/image';
 import Markdown from 'markdown-to-jsx';
 import qs from 'qs';
 
-async function getWelcomeContent(): Promise<{ data: WelcomeSectionData } | null> {
+async function loadWelcomeContent(): Promise<{ data: WelcomeSectionData } | null> {
   try {
-    const query = qs.stringify(
-      {
-        populate: '*'
-      },
-      {
-        encodeValuesOnly: true
-      }
-    );
-
-    console.log('[Welcome] Fetching with query:', `/api/welcome-section?${query}`);
+    const response = await fetchWelcomeContent();
+    console.log('[Welcome] Response:', response);
     
-    const response = await fetchAPI<{ data: WelcomeSectionData }>(
-      `/api/welcome-section?${query}`
-    );
-
     if (!response?.data) {
       console.error('[Welcome] Invalid welcome content structure:', response);
       return null;
@@ -34,7 +22,7 @@ async function getWelcomeContent(): Promise<{ data: WelcomeSectionData } | null>
 }
 
 export default async function WelcomeSection() {
-  const welcomeContent = await getWelcomeContent();
+  const welcomeContent = await loadWelcomeContent();
 
   if (!welcomeContent?.data) {
     console.warn('[Welcome] No content available');

@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { getProductCategories } from '@/utils/api';
 import ProductsClient from './products-client';
 import { notFound } from 'next/navigation';
-import { CategoryResponse } from '@/utils/productApi';
+import { CategoryResponse } from '@/types/strapi';
 import ErrorBoundary from '@/components/ErrorBoundary';
 
 export const metadata: Metadata = {
@@ -50,6 +50,13 @@ export default async function ProductsPage() {
     }));
 
     if (!transformedCategories.length) {
+      console.error('[ProductsPage] No categories available');
+      notFound();
+    }
+
+    const defaultCategory = transformedCategories[0];
+    if (!defaultCategory?.slug) {
+      console.error('[ProductsPage] Invalid default category');
       notFound();
     }
 
@@ -57,7 +64,7 @@ export default async function ProductsPage() {
       <ErrorBoundary>
         <ProductsClient 
           categories={transformedCategories}
-          defaultCategory={transformedCategories[0]}
+          defaultCategory={defaultCategory}
         />
       </ErrorBoundary>
     );

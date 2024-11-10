@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { CategoryResponse, ProductResponse, getCategoryProducts } from '@/utils/productApi';
+import { CategoryResponse, ProductApiResponse } from '@/types/strapi';
 import ProductHero from '@/components/products/ProductHero';
 import CategoryTabs from '@/components/products/CategoryTabs';
 import ProductGrid from '@/components/products/ProductGrid';
-import { getImageUrl } from '@/utils/api';
+import { getCategoryProducts } from '@/utils/productApi';
+import { verifyStrapiConfig } from '@/utils/strapi-config';
 
 interface ProductsClientProps {
   categories: CategoryResponse[];
@@ -13,137 +14,108 @@ interface ProductsClientProps {
 }
 
 export default function ProductsClient({ categories, defaultCategory }: ProductsClientProps) {
-  console.log('[ProductsClient] Mounting with:', {
-    categoriesCount: categories.length,
-    defaultCategorySlug: defaultCategory?.slug,
-    defaultCategoryTitle: defaultCategory?.Title,
-    categorySlugs: categories.map(c => c.slug),
-    hasDefaultCategory: !!defaultCategory
-  });
-
-  const [activeCategory, setActiveCategory] = useState(defaultCategory);
-  const [products, setProducts] = useState<ProductResponse[]>([]);
+  const [activeCategory, setActiveCategory] = useState<CategoryResponse>(defaultCategory);
+  const [products, setProducts] = useState<ProductApiResponse['data']>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Log when activeCategory changes
+  // Verify Strapi configuration on mount
   useEffect(() => {
-    console.log('[ProductsClient] Active category changed:', {
-      slug: activeCategory?.slug,
-      title: activeCategory?.Title
-    });
-  }, [activeCategory]);
+    if (process.env.NODE_ENV === 'development') {
+      verifyStrapiConfig().then(result => {
+        console.log('[ProductsClient] Strapi config verification:', result);
+      });
+    }
+  }, []);
 
   useEffect(() => {
-    async function loadProducts() {
-      if (!activeCategory?.slug) {
-        console.error('[ProductsClient] Missing category data:', {
-          activeCategory,
-          defaultCategory,
-          categoriesCount: categories.length,
-          allCategories: categories.map(c => ({
-            slug: c.slug,
-            title: c.Title
-          }))
-        });
-        return;
-      }
+    if (!activeCategory?.slug) {
+      console.warn('[ProductsClient] No active category slug');
+      setIsLoading(false);
+      setProducts([]); // Clear products when no category is selected
+      return;
+    }
 
-      setIsLoading(true);
+    let isMounted = true;
+    setIsLoading(true);
+    setError(null);
+
+    const loadProducts = async () => {
       try {
-        console.log('[ProductsClient] Fetching products:', {
-          categorySlug: activeCategory.slug,
-          categoryTitle: activeCategory.Title,
-          timestamp: new Date().toISOString()
-        });
-        
         const response = await getCategoryProducts(activeCategory.slug);
         
+        if (!isMounted) return;
+
         if (!response?.data) {
-          throw new Error('Invalid response structure from API');
+          console.warn('[ProductsClient] No products data in response');
+          setProducts([]);
+          return;
         }
 
         console.log('[ProductsClient] Products loaded:', {
           count: response.data.length,
-          products: response.data.map(p => ({
-            id: p.id,
-            name: p.attributes.Name,
-            hasImage: !!p.attributes.MainImage?.data
-          }))
+          categorySlug: activeCategory.slug
         });
-        
+
         setProducts(response.data);
-      } catch (error: unknown) {
-        const errorDetails = {
-          name: error instanceof Error ? error.name : 'Unknown',
-          message: error instanceof Error ? error.message : String(error),
-          stack: error instanceof Error ? error.stack : undefined,
-          category: activeCategory.slug
-        };
-        
-        console.error('[ProductsClient] Product fetch failed:', errorDetails);
-        setProducts([]);
+      } catch (err) {
+        if (!isMounted) return;
+        console.error('[ProductsClient] Error loading products:', err);
+        setError('Produkte konnten nicht geladen werden');
+        setProducts([]); // Ensure we have empty array on error
       } finally {
-        setIsLoading(false);
+        if (isMounted) setIsLoading(false);
       }
-    }
+    };
 
     loadProducts();
-  }, [activeCategory?.slug, categories, defaultCategory]);
 
-  // Log state changes
-  useEffect(() => {
-    console.log('[ProductsClient] State updated:', {
-      isLoading,
-      productsCount: products.length
-    });
-  }, [isLoading, products]);
+    return () => { isMounted = false; };
+  }, [activeCategory?.slug]);
 
-  // Initial state logging effect
-  useEffect(() => {
-    console.log('[ProductsClient] Initial state:', {
-      activeCategory,
-      defaultCategory,
-      hasSlug: !!activeCategory?.slug,
-      defaultSlug: defaultCategory?.slug
+  const handleCategoryChange = (slug: string) => {
+    console.log('[ProductsClient] Category change requested:', {
+      currentSlug: activeCategory?.slug,
+      newSlug: slug
     });
-  }, [activeCategory, defaultCategory]);
+    
+    const newCategory = categories.find(cat => cat.slug === slug);
+    if (newCategory && newCategory.slug !== activeCategory?.slug) {
+      console.log('[ProductsClient] Changing category:', {
+        from: activeCategory.slug,
+        to: newCategory.slug
+      });
+      setActiveCategory(newCategory);
+    }
+  };
 
-  useEffect(() => {
-    console.log('[ProductsClient] State transition:', {
-      timestamp: new Date().toISOString(),
-      activeCategory: {
-        slug: activeCategory?.slug,
-        title: activeCategory?.Title
-      },
-      isLoading,
-      productsCount: products.length,
-      hasProducts: products.length > 0,
-      firstProduct: products[0]?.attributes?.Name
-    });
-  }, [activeCategory, isLoading, products]);
+  // Handle error state
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <p className="text-red-700">{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
       <ProductHero 
-        title={activeCategory?.Title || 'Unsere Produkte'}
-        description={activeCategory?.Description || 'Entdecken Sie unsere Produktpalette'}
-        image={activeCategory?.Image?.data?.[0]?.attributes?.url}
+        title={activeCategory.Title}
+        description={activeCategory.Description}
+        image={activeCategory.Image?.data?.[0]?.attributes?.url}
       />
       <CategoryTabs 
         categories={categories}
-        activeSlug={activeCategory?.slug || ''}
-        onCategoryChange={(slug) => {
-          console.log('[ProductsClient] Category change requested:', slug);
-          const newCategory = categories.find(cat => cat.slug === slug);
-          if (newCategory) {
-            setActiveCategory(newCategory);
-          }
-        }}
+        activeSlug={activeCategory.slug}
+        onCategoryChange={handleCategoryChange}
       />
       <ProductGrid 
         products={products}
         isLoading={isLoading}
-        activeCategory={activeCategory?.slug || ''}
+        activeCategory={activeCategory.slug}
       />
     </>
   );

@@ -1,5 +1,5 @@
 import { StrapiError, StrapiMediaData, StrapiResponse } from '@/types/strapi';
-import { ProductCategoryData, FAQData, ContactSectionData } from '@/types/content';
+import { ProductCategoryData, FAQData, ContactSectionData, WelcomeSectionData } from '@/types/content';
 import { FileResourceData } from '@/types/common';
 import qs from 'qs';
 import { BaseProductCategory, HomeProductCategory } from '@/types/common';
@@ -194,3 +194,6 @@ export const getFileResources = async (): Promise<StrapiResponse<FileResourceDat
 
 export const getImageUrl = API_CONFIG.getMediaUrl;
 
+export const getWelcomeContent = async (): Promise<StrapiResponse<WelcomeSectionData>> => {
+  return await fetchAPI('/api/welcome-section', { populate: '*' });
+};

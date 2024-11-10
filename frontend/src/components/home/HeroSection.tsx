@@ -16,10 +16,9 @@ async function getHeroContent(): Promise<{ data: HeroSectionData } | null> {
       }
     );
 
-    console.log('[Hero] Fetching with query:', `/api/hero-section?${query}`);
-    
     const response = await fetchAPI<{ data: HeroSectionData }>(
-      `/api/hero-section?${query}`
+      '/api/hero-section',
+      { populate: '*' }
     );
 
     if (!response?.data) {

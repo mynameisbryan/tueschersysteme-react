@@ -15,19 +15,39 @@ export interface FileResourceData {
 
 export interface Product {
   id: number;
-  attributes: {
-    Name: string;
-    ShortDescription: string;
-    DetailedDescription?: string;
-    Features?: string[];
-    MainImage?: {
-      data?: {
-        attributes?: {
-          url?: string;
-          alternativeText?: string;
+  Name: string;
+  ShortDescription: string;
+  DetailedDescription?: string;
+  Features?: string[];
+  MainImage?: {
+    data?: {
+      attributes?: {
+        url: string;
+        alternativeText?: string;
+        width?: number;
+        height?: number;
+        formats?: {
+          [key: string]: StrapiMediaFormat;
         };
       };
     };
+  };
+  GalleryImages?: {
+    data?: Array<{
+      attributes?: {
+        url: string;
+        alternativeText?: string;
+        width?: number;
+        height?: number;
+        formats?: {
+          [key: string]: StrapiMediaFormat;
+        };
+      };
+    }>;
+  };
+  product_category: {
+    Title: string;
+    slug: string;
   };
 }
 
