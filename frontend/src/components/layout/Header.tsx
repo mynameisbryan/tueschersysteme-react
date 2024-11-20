@@ -27,38 +27,46 @@ export default function Header() {
   return (
     <>
       <header className={`fixed w-full z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-[#030d26] shadow-lg' : 'bg-[#030d26]'
+        isScrolled ? 'bg-white shadow-lg' : 'bg-white'
       }`}>
         <div className="container-padding flex items-center justify-between h-header">
           <Link href="/" className="flex items-center">
-            <Image
-              src="/images/logo-white-cyan.png"
-              alt="Tüscher Systeme Logo"
-              width={160}
-              height={55}
-              className="max-h-[55px] w-auto"
-              priority
-              onError={(e) => {
-                console.error('Error loading logo image')
-                e.currentTarget.src = '/images/fallback-logo.jpg'
-              }}
-            />
+            <div style={{ position: 'relative', width: '160px', height: '55px' }}>
+              <Image
+                src="/images/logo.jpg"
+                alt="Tüscher Systeme Logo"
+                fill
+                sizes="160px"
+                priority
+                style={{
+                  objectFit: 'contain'
+                }}
+                onError={(e) => {
+                  console.error('Error loading logo image')
+                  e.currentTarget.src = '/images/logo.jpg'
+                }}
+              />
+            </div>
           </Link>
 
           <nav className="hidden md:flex items-center space-x-8">
             <Link 
               href="/" 
-              className="relative py-2 text-white group"
+              className="relative py-2 text-tuscher-blue-navy group"
             >
               <span className="relative z-10">Home</span>
-              <span className="absolute inset-x-0 bottom-0 h-0.5 bg-[#7CDDBA] transform origin-left scale-x-0 transition-transform duration-200 ease-out group-hover:scale-x-100 shadow-[0_2px_8px_rgba(124,221,186,0.6)]" />
+              <div className="absolute inset-x-0 bottom-0 h-[2px] overflow-hidden">
+                <div className="gradient-line-animation h-full transform origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100" />
+              </div>
             </Link>
             <Link 
               href="/products" 
-              className="relative py-2 text-white group"
+              className="relative py-2 text-tuscher-blue-navy group"
             >
               <span className="relative z-10">Produkte</span>
-              <span className="absolute inset-x-0 bottom-0 h-0.5 bg-[#7CDDBA] transform origin-left scale-x-0 transition-transform duration-200 ease-out group-hover:scale-x-100 shadow-[0_2px_8px_rgba(124,221,186,0.6)]" />
+              <div className="absolute inset-x-0 bottom-0 h-[2px] overflow-hidden">
+                <div className="gradient-line-animation h-full transform origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100" />
+              </div>
             </Link>
             <NavigationButton 
               href="#contact-section" 
@@ -70,7 +78,7 @@ export default function Header() {
           </nav>
 
           <button 
-            className="md:hidden text-white p-2 hover:bg-[#051633] rounded-md transition-colors"
+            className="md:hidden text-tuscher-blue-navy p-2 hover:bg-gray-100 rounded-md transition-colors"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label="Toggle menu"
           >
@@ -84,14 +92,16 @@ export default function Header() {
         
         <div className="relative h-[3px] w-full overflow-hidden">
           <div 
-            className="gradient-line-animation absolute inset-0"
+            className="absolute inset-0"
             style={{
-              transform: `translateX(-50%) translateX(${gradientPosition})`,
-              width: '400%',
-              transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
+              width: '200%',
+              transform: `translateX(${-50 + scrollPosition/2}%)`,
+              transition: 'transform 0.2s ease-out',
+              background: 'linear-gradient(90deg, rgba(124,221,186,0.1) 0%, #7CDDBA 35%, #8FE4C6 50%, #7CDDBA 65%, rgba(124,221,186,0.1) 100%)',
+              backgroundSize: '200% 100%'
             }}
           />
-          <div className="absolute inset-0 shadow-[0_2px_12px_rgba(124,221,186,0.6)]" />
+          <div className="absolute inset-0 shadow-[0_2px_12px_rgba(124,221,186,0.4)]" />
         </div>
       </header>
 
