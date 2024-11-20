@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { fetchAPI, getImageUrl } from '@/utils/api';
 import { HomeProductCategory } from '@/types/common';
 import { StrapiError, StrapiResponse, StrapiMediaFormat } from '@/types/strapi';
+import CategoryCTA from '@/components/ui/CategoryCTA';
 
 interface RawImageData {
   id: number;
@@ -89,7 +90,11 @@ export default async function ProductCategories() {
               const altText = imageData?.alternativeText || Title;
 
               return (
-                <div key={category.id} className="card card-hover group">
+                <Link 
+                  key={category.id}
+                  href={`/products?category=${slug}`}
+                  className="card card-hover group"
+                >
                   <div className="relative aspect-[16/9] overflow-hidden">
                     <NextImage
                       src={getImageUrl(imageUrl)}
@@ -103,17 +108,16 @@ export default async function ProductCategories() {
                     <h3 className="text-xl font-bold text-tuscher-blue mb-2">
                       {Title}
                     </h3>
-                    <p className="text-tuscher-blue/70">
+                    <p className="text-tuscher-blue/70 mb-4">
                       {Description}
                     </p>
-                    <Link 
-                      href={`/products/${slug}`} 
-                      className="inline-block text-tuscher-blue hover:text-tuscher-light transition-colors"
-                    >
-                      Mehr erfahren
-                    </Link>
+                    <div className="flex flex-col space-y-4">
+                      <CategoryCTA href={`/products?category=${slug}`}>
+                        Produkte entdecken
+                      </CategoryCTA>
+                    </div>
                   </div>
-                </div>
+                </Link>
               );
             })}
           </div>

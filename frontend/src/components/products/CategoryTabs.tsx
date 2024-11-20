@@ -2,6 +2,7 @@
 
 import { CategoryResponse } from '@/types/strapi';
 import { cn } from '@/utils/cn';
+import { useRef, useEffect } from 'react';
 
 interface CategoryTabsProps {
   categories: CategoryResponse[];
@@ -10,6 +11,29 @@ interface CategoryTabsProps {
 }
 
 export default function CategoryTabs({ categories, activeSlug, onCategoryChange }: CategoryTabsProps) {
+  const tabsContainerRef = useRef<HTMLDivElement>(null);
+  const activeTabRef = useRef<HTMLButtonElement>(null);
+
+  // Center active tab when it changes
+  useEffect(() => {
+    if (tabsContainerRef.current && activeTabRef.current) {
+      const container = tabsContainerRef.current;
+      const activeTab = activeTabRef.current;
+      
+      // Calculate the center position
+      const containerWidth = container.offsetWidth;
+      const tabWidth = activeTab.offsetWidth;
+      const tabLeft = activeTab.offsetLeft;
+      const scrollLeft = tabLeft - (containerWidth / 2) + (tabWidth / 2);
+      
+      // Smooth scroll to center
+      container.scrollTo({
+        left: scrollLeft,
+        behavior: 'smooth'
+      });
+    }
+  }, [activeSlug]);
+
   console.log('[CategoryTabs] Rendering:', JSON.stringify({
     categoriesCount: categories?.length,
     activeSlug,
@@ -33,10 +57,14 @@ export default function CategoryTabs({ categories, activeSlug, onCategoryChange 
   return (
     <div className="sticky top-[80px] z-30 bg-white/95 backdrop-blur-sm border-b border-gray-200">
       <div className="container mx-auto px-4 py-4 sm:py-6">
-        <div className="flex gap-2 sm:gap-4 overflow-x-auto scrollbar-hide -mx-4 px-4 pb-4">
+        <div 
+          ref={tabsContainerRef}
+          className="flex gap-2 sm:gap-4 overflow-x-auto scrollbar-hide -mx-4 px-4 pb-4 scroll-smooth"
+        >
           {categories.map((category) => (
             <button
               key={category.id}
+              ref={category.slug === activeSlug ? activeTabRef : null}
               onClick={() => handleCategoryClick(category.slug || '')}
               className={cn(
                 "px-4 sm:px-6 py-2 sm:py-3 whitespace-nowrap rounded-lg transition-all duration-200",

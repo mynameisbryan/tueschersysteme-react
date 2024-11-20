@@ -12,7 +12,11 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-export default async function ProductsPage() {
+interface ProductsPageProps {
+  searchParams: { category?: string };
+}
+
+export default async function ProductsPage({ searchParams }: ProductsPageProps) {
   try {
     const categoriesResponse = await getProductCategories({
       populate: {
@@ -54,9 +58,13 @@ export default async function ProductsPage() {
       notFound();
     }
 
-    const defaultCategory = transformedCategories[0];
-    if (!defaultCategory?.slug) {
-      console.error('[ProductsPage] Invalid default category');
+    // Find the initial category from URL or use the first one
+    const initialCategory = searchParams.category
+      ? transformedCategories.find(cat => cat.slug === searchParams.category)
+      : transformedCategories[0];
+
+    if (!initialCategory?.slug) {
+      console.error('[ProductsPage] Invalid category');
       notFound();
     }
 
@@ -64,7 +72,7 @@ export default async function ProductsPage() {
       <ErrorBoundary>
         <ProductsClient 
           categories={transformedCategories}
-          defaultCategory={defaultCategory}
+          defaultCategory={initialCategory}
         />
       </ErrorBoundary>
     );

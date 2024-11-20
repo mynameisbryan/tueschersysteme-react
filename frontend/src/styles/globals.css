@@ -42,37 +42,60 @@
   }
 
   /* Base Button */
-  .btn {
-    @apply relative inline-flex items-center justify-center 
-           px-6 py-3 rounded-lg 
-           transition-all duration-300
-           relative overflow-hidden;
+  .btn-base {
+    @apply relative inline-flex items-center justify-center
+           px-6 py-2.5 rounded-lg
+           font-medium transition-all duration-300
+           overflow-hidden;
   }
 
-  /* Button Effects */
-  .btn-hover-effects {
-    @apply before:absolute before:inset-0 before:z-0
-           before:opacity-0 before:transition-opacity before:duration-300
-           before:bg-gradient-to-r before:from-[var(--color-primary)]/0 before:via-[var(--color-primary)]/20 before:to-[var(--color-primary)]/0
-           after:absolute after:inset-0 after:z-0
-           after:opacity-0 after:transition-opacity after:duration-300
-           after:bg-[radial-gradient(circle_at_center,var(--color-primary)/0.1_0%,transparent_70%)];
+  /* White button with dark blue text */
+  .btn-white {
+    @apply btn-base bg-white text-[var(--color-navy)]
+           shadow-lg hover:shadow-xl;
   }
 
-  .btn-hover-effects:hover::before,
-  .btn-hover-effects:hover::after {
+  /* Transparent button with white border and text */
+  .btn-outline {
+    @apply btn-base bg-transparent text-white
+           border-2 border-white;
+  }
+
+  /* Dark blue button with white text */
+  .btn-dark {
+    @apply btn-base bg-[var(--color-navy)] text-white
+           shadow-lg hover:shadow-xl;
+  }
+
+  /* Hover effect gradient overlay for all buttons */
+  .btn-base::after {
+    @apply absolute inset-0 opacity-0 transition-opacity duration-300;
+    content: '';
+    background: linear-gradient(90deg, 
+      rgba(11,132,181,0.1) 0%, 
+      rgba(65,184,213,0.2) 50%, 
+      rgba(11,132,181,0.1) 100%
+    );
+  }
+
+  .btn-base:hover::after {
     @apply opacity-100;
+  }
+
+  /* Active/Press state */
+  .btn-base:active {
+    @apply transform scale-[0.98] transition-transform duration-100;
   }
 
   /* Button Variants */
   .btn-primary-light {
-    @apply btn bg-white text-[var(--color-navy)]
+    @apply btn-base bg-white text-[var(--color-navy)]
            shadow-lg hover:shadow-[0_0_20px_var(--color-primary-glow)]
            hover:bg-white active:scale-95;
   }
 
   .btn-outline-light {
-    @apply btn bg-transparent text-white 
+    @apply btn-base bg-transparent text-white 
            border-2 border-white
            hover:border-[var(--color-primary)]
            hover:shadow-[0_0_20px_var(--color-primary-glow)]
@@ -372,6 +395,23 @@
            hover:border-tuscher-blue-navy/20
            hover:bg-gray-50;
   }
+
+  .nav-link-gradient {
+    @apply absolute inset-x-0 bottom-0 h-[2px] overflow-hidden;
+  }
+
+  .nav-link-gradient::after {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-[#0B84B5] via-[#41B8D5] to-[#0B84B5];
+    background-size: 200% 100%;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease-out;
+  }
+
+  .group:hover .nav-link-gradient::after {
+    transform: scaleX(1);
+  }
 }
 
 @layer utilities {
@@ -400,4 +440,20 @@
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 90px; /* Match the offset */
+}
+
+@keyframes gradientFlow {
+  0% {
+    background-position: 100% 50%;
+  }
+  50% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: -100% 50%;
+  }
+}
+
+.animate-gradientFlow {
+  animation: gradientFlow 3s linear infinite;
 }

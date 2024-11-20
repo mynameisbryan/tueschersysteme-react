@@ -7,6 +7,10 @@ interface HeroBackgroundImageProps {
   imageUrl: string;
 }
 
+const BLUR_DATA_URL = `data:image/svg+xml;base64,${Buffer.from(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 1 1"><rect width="1" height="1" fill="#1E3A8A"/></svg>'
+).toString('base64')}`;
+
 export default function HeroBackgroundImage({ imageUrl }: HeroBackgroundImageProps) {
   return (
     <div className="absolute inset-0">
@@ -27,9 +31,7 @@ export default function HeroBackgroundImage({ imageUrl }: HeroBackgroundImagePro
           });
         }}
         placeholder="blur"
-        blurDataURL={`data:image/svg+xml;base64,${Buffer.from(
-          '<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 1 1"><rect width="1" height="1" fill="#1E3A8A"/></svg>'
-        ).toString('base64')}`}
+        blurDataURL={BLUR_DATA_URL}
       />
     </div>
   );

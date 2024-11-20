@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { CategoryResponse, ProductApiResponse } from '@/types/strapi';
 import ProductHero from '@/components/products/ProductHero';
 import CategoryTabs from '@/components/products/CategoryTabs';
@@ -14,27 +15,29 @@ interface ProductsClientProps {
 }
 
 export default function ProductsClient({ categories, defaultCategory }: ProductsClientProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [activeCategory, setActiveCategory] = useState<CategoryResponse>(defaultCategory);
   const [products, setProducts] = useState<ProductApiResponse['data']>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Verify Strapi configuration on mount
-  useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      verifyStrapiConfig().then(result => {
-        console.log('[ProductsClient] Strapi config verification:', result);
-      });
+  // Handle URL updates when category changes
+  const handleCategoryChange = (slug: string) => {
+    const newCategory = categories.find(cat => cat.slug === slug);
+    if (newCategory && newCategory.slug !== activeCategory?.slug) {
+      setActiveCategory(newCategory);
+      
+      // Update URL without reload
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('category', slug);
+      router.push(`/products?${params.toString()}`, { scroll: false });
     }
-  }, []);
+  };
 
+  // Load products when category changes
   useEffect(() => {
-    if (!activeCategory?.slug) {
-      console.warn('[ProductsClient] No active category slug');
-      setIsLoading(false);
-      setProducts([]); // Clear products when no category is selected
-      return;
-    }
+    if (!activeCategory?.slug) return;
 
     let isMounted = true;
     setIsLoading(true);
@@ -43,51 +46,20 @@ export default function ProductsClient({ categories, defaultCategory }: Products
     const loadProducts = async () => {
       try {
         const response = await getCategoryProducts(activeCategory.slug);
-        
         if (!isMounted) return;
-
-        if (!response?.data) {
-          console.warn('[ProductsClient] No products data in response');
-          setProducts([]);
-          return;
-        }
-
-        console.log('[ProductsClient] Products loaded:', {
-          count: response.data.length,
-          categorySlug: activeCategory.slug
-        });
-
-        setProducts(response.data);
+        setProducts(response.data || []);
       } catch (err) {
         if (!isMounted) return;
-        console.error('[ProductsClient] Error loading products:', err);
+        console.error('[ProductsClient] Error:', err);
         setError('Produkte konnten nicht geladen werden');
-        setProducts([]); // Ensure we have empty array on error
       } finally {
         if (isMounted) setIsLoading(false);
       }
     };
 
     loadProducts();
-
     return () => { isMounted = false; };
   }, [activeCategory?.slug]);
-
-  const handleCategoryChange = (slug: string) => {
-    console.log('[ProductsClient] Category change requested:', {
-      currentSlug: activeCategory?.slug,
-      newSlug: slug
-    });
-    
-    const newCategory = categories.find(cat => cat.slug === slug);
-    if (newCategory && newCategory.slug !== activeCategory?.slug) {
-      console.log('[ProductsClient] Changing category:', {
-        from: activeCategory.slug,
-        to: newCategory.slug
-      });
-      setActiveCategory(newCategory);
-    }
-  };
 
   // Handle error state
   if (error) {
