@@ -118,8 +118,26 @@ export const getProductCategories = async (
   query?: ProductCategoriesParams
 ): Promise<StrapiResponse<BaseProductCategory[]>> => {
   try {
-    const response = await fetchAPI<StrapiResponse<any>>('/api/product-categories', query);
+    const defaultQuery = {
+      sort: ['Order:asc'],
+      populate: {
+        Image: { fields: ['url', 'alternativeText', 'width', 'height', 'formats'] },
+        products: {
+          sort: ['Order:asc'],
+          populate: {
+            MainImage: { fields: ['url', 'alternativeText', 'width', 'height', 'formats'] }
+          }
+        }
+      },
+      ...query
+    };
+
+    const response = await fetchAPI<StrapiResponse<any>>('/api/product-categories', defaultQuery);
     
+    if (response?.data) {
+      response.data.sort((a: BaseProductCategory, b: BaseProductCategory) => a.Order - b.Order);
+    }
+
     if (!response?.data) {
       throw new Error('Invalid API response structure');
     }

@@ -6,6 +6,7 @@ export const getCategoryProducts = async (slug: string): Promise<ProductApiRespo
     const response = await fetchAPI<ProductApiResponse>(
       '/api/products',
       {
+        sort: ['Order:asc'],
         filters: {
           product_category: {
             slug: {
@@ -24,16 +25,13 @@ export const getCategoryProducts = async (slug: string): Promise<ProductApiRespo
       }
     );
 
-    if (!response?.data) {
-      console.warn('[ProductAPI] No data in response');
-      return { data: [], meta: { pagination: { page: 1, pageSize: 0, pageCount: 0, total: 0 } } };
-    }
-
     return response;
   } catch (error) {
     console.error('[ProductAPI] Error fetching products:', error);
-    // Return empty data instead of throwing
-    return { data: [], meta: { pagination: { page: 1, pageSize: 0, pageCount: 0, total: 0 } } };
+    return { 
+      data: [], 
+      meta: { pagination: { page: 1, pageSize: 0, pageCount: 0, total: 0 } } 
+    };
   }
 };
   

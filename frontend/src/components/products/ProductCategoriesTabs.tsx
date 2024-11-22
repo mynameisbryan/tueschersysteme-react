@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Image from 'next/image';
 import { BaseProductCategory } from '@/types/common';
 import { getImageUrl } from '@/utils/api';
@@ -11,8 +11,13 @@ interface ProductCategoriesProps {
 }
 
 export default function ProductCategoryTabs({ categories }: ProductCategoriesProps) {
+  // Sort categories by ID using useMemo to avoid unnecessary re-sorting
+  const sortedCategories = useMemo(() => {
+    return [...categories].sort((a, b) => (a.Order || 0) - (b.Order || 0));
+  }, [categories]);
+
   const [activeCategory, setActiveCategory] = useState<string>(
-    categories[0]?.slug || ''
+    sortedCategories[0]?.slug || ''
   );
 
   return (
@@ -20,7 +25,7 @@ export default function ProductCategoryTabs({ categories }: ProductCategoriesPro
       <div className="container">
         <div className="overflow-x-auto pb-4 scrollbar-hide">
           <div className="flex space-x-4 min-w-max">
-            {categories.map((category) => {
+            {sortedCategories.map((category) => {
               const imageUrl = category.Image?.[0]?.url;
               
               return (

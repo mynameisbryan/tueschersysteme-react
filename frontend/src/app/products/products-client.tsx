@@ -84,11 +84,13 @@ export default function ProductsClient({ categories, defaultCategory }: Products
         activeSlug={activeCategory.slug}
         onCategoryChange={handleCategoryChange}
       />
-      <ProductGrid 
-        products={products}
-        isLoading={isLoading}
-        activeCategory={activeCategory.slug}
-      />
+      <div id="products">
+        <ProductGrid 
+          products={products}
+          isLoading={isLoading}
+          activeCategory={activeCategory.slug}
+        />
+      </div>
     </>
   );
 }

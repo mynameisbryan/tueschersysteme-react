@@ -338,7 +338,6 @@ export interface StrapiProduct {
     slug: string;
   };
 }
-
 export interface ProductApiResponse {
   data: Array<{
     id: number;
@@ -355,6 +354,14 @@ export interface ProductApiResponse {
         };
       };
     };
+    GalleryImages?: Array<{
+      id: number;
+      documentId: string;
+      url: string;
+      alternativeText?: string;
+      width?: number;
+      height?: number;
+    }>;
     product_category?: {
       Title: string;
       slug: string;
@@ -368,4 +375,4 @@ export interface ProductApiResponse {
       total: number;
     };
   };
-} 
+}

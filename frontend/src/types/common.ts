@@ -16,6 +16,7 @@ export interface FileResourceData {
 export interface Product {
   id: number;
   Name: string;
+  Order: number;
   ShortDescription: string;
   DetailedDescription?: string;
   Features?: string[];
@@ -73,6 +74,7 @@ export interface HomeProductCategory {
 // Für die Products-Page (mit products)
 export interface BaseProductCategory {
   id: number;
+  Order: number;
   documentId: string;
   Title: string;
   Description: string;
