@@ -18,12 +18,12 @@ export default function ProductCard({
   features,
   category,
 }: ProductCardProps) {
-  // Debug logs for image handling
-  console.log('[ProductCard] Rendering card:', {
+  // Debug log
+  console.log('[ProductCard] Rendering:', {
     title,
-    hasImageUrl: !!imageUrl,
+    hasImage: !!imageUrl,
     imageUrl,
-    imageAlt
+    features
   });
 
   return (
@@ -50,11 +50,8 @@ export default function ProductCard({
             </div>
           </div>
         )}
-        <div className="absolute top-4 right-4">
-          <span className="px-3 py-1 text-sm bg-tuscher-blue/90 text-white rounded-full">
-            {category}
-          </span>
-        </div>
+        
+      
       </div>
       
       <div className="p-6">
