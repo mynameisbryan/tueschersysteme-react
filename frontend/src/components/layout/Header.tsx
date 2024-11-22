@@ -44,7 +44,7 @@ export default function Header() {
                 }}
                 onError={(e) => {
                   console.error('Error loading logo image')
-                  e.currentTarget.src = '/images/logo.jpg'
+                  e.currentTarget.src = '/logo.png'
                 }}
               />
             </div>
