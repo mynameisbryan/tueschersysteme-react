@@ -41,21 +41,13 @@ export interface StrapiMediaFormat {
   url: string;
   width: number;
   height: number;
-  size: number;
-  mime: string;
 }
 
 export interface StrapiMediaData {
-  id: number;
-  attributes: {
-    url: string;
-    alternativeText: string | null;
-    width: number;
-    height: number;
-    formats: {
-      [key: string]: StrapiMediaFormat;
-    };
-  };
+  url: string;
+  alternativeText?: string;
+  width?: number;
+  height?: number;
 }
 
 export interface StrapiMedia {
@@ -122,14 +114,8 @@ interface MainImage {
 export interface Product {
   id: number;
   Name: string;
-  ShortDescription: string;
-  DetailedDescription?: string;
-  Features?: string[];
-  MainImage?: MainImage;
-  product_category: {
-    Title: string;
-    slug: string;
-  };
+  ShortDescription?: string;
+  MainImage?: StrapiMediaData | null;
 }
 
 export interface StrapiMediaFormats {
@@ -191,14 +177,6 @@ export interface RawProductResponse {
   };
 }
 
-interface FetchAPIConfig {
-  // ... existing properties ...
-  pagination?: {
-    page?: number;
-    pageSize?: number;
-  };
-  populate?: string | string[];
-}
 
 export interface CategoryResponse {
   id: number;
@@ -341,31 +319,31 @@ export interface StrapiProduct {
 export interface ProductApiResponse {
   data: Array<{
     id: number;
-    Name: string;
-    ShortDescription: string;
-    Features?: string[];
-    MainImage?: {
-      data?: {
-        attributes?: {
-          url: string;
-          alternativeText?: string;
-          width?: number;
-          height?: number;
-        };
+    attributes: {
+      Name: string;
+      ShortDescription: string;
+      Features?: string[];
+      MainImage: {
+        data: {
+          id: number;
+          attributes: {
+            url: string;
+            alternativeText?: string;
+            width: number;
+            height: number;
+          }
+        }
       };
-    };
-    GalleryImages?: Array<{
-      id: number;
-      documentId: string;
-      url: string;
-      alternativeText?: string;
-      width?: number;
-      height?: number;
-    }>;
-    product_category?: {
-      Title: string;
-      slug: string;
-    };
+      product_category: {
+        data: {
+          id: number;
+          attributes: {
+            Title: string;
+            slug: string;
+          }
+        }
+      };
+    }
   }>;
   meta: {
     pagination: {
@@ -375,4 +353,13 @@ export interface ProductApiResponse {
       total: number;
     };
   };
+}
+
+export interface CategoryAttributes {
+  Title: string;
+  Description: string;
+  ShortDescription?: string;
+  slug: string;
+  Order?: number;
+  // ... other fields
 }

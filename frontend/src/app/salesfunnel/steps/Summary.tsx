@@ -1,0 +1,181 @@
+import React, { useState } from 'react';
+import { useFunnel } from '../FunnelContext';
+import FunnelStep from '@/components/salesfunnel/FunnelStep';
+import { submitSalesFunnelInquiry } from '@/app/actions/sales-funnel';
+import { motion, AnimatePresence } from 'framer-motion';
+import { salesFunnelSchema } from '@/schemas/salesfunnel';
+import { z } from 'zod';
+
+const SummarySection = ({ title, children }: { title: string; children: React.ReactNode }) => (
+  <div className="bg-white/90 backdrop-blur-md rounded-lg p-6 
+                  border border-tuscher-blue/10 shadow-lg hover:shadow-xl
+                  transition-all duration-300 hover:border-tuscher-blue/20">
+    <h3 className="font-bold text-tuscher-blue mb-4">{title}</h3>
+    {children}
+  </div>
+);
+
+const Step5Summary = () => {
+  const { state, currentStep, previousStep } = useFunnel();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    setStatus('idle');
+    setErrorMessage('');
+
+    try {
+      const validatedData = salesFunnelSchema.parse(state);
+      console.log('Submitting data:', validatedData);
+
+      const response = await submitSalesFunnelInquiry(validatedData);
+      console.log('API Response:', response);
+
+      if (response.success && response.data) {
+        setStatus('success');
+      } else {
+        setStatus('error');
+        setErrorMessage(response.error || 'Fehler beim Speichern der Daten');
+      }
+    } catch (error) {
+      console.error('Submission error:', error);
+      setStatus('error');
+      setErrorMessage(
+        error instanceof z.ZodError 
+          ? 'Validierungsfehler: ' + error.errors[0].message 
+          : error instanceof Error 
+            ? error.message 
+            : 'Ein unerwarteter Fehler ist aufgetreten'
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const timelineLabels: Record<string, string> = {
+    'one_month': 'In den nächsten 4-6 Wochen',
+    'three_months': 'In den nächsten 3 Monaten',
+    'six_months': 'In den nächsten 6 Monaten',
+    'flexible': 'Flexibel'
+  };
+
+  const groupProductsByCategory = () => {
+    const grouped: Record<string, Array<{ name: string; quantity: number }>> = {};
+    state.products.forEach(product => {
+      if (!grouped[product.category]) {
+        grouped[product.category] = [];
+      }
+      grouped[product.category].push({
+        name: product.name,
+        quantity: product.quantity
+      });
+    });
+    return grouped;
+  };
+
+  return (
+    <FunnelStep
+      title="Zusammenfassung Ihrer Anfrage"
+      subtitle="Überprüfen Sie Ihre Angaben und senden Sie die Anfrage ab"
+      onNext={handleSubmit}
+      onBack={previousStep}
+      isValid={true}
+      isLoading={isSubmitting}
+      currentStep={currentStep}
+      totalSteps={5}
+    >
+      <div className="max-w-3xl mx-auto">
+        <AnimatePresence mode="wait">
+          {status === 'success' ? (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="bg-green-50 border border-green-200 rounded-lg p-8 text-center"
+            >
+              <span className="text-4xl mb-4 block">✨</span>
+              <h3 className="text-xl font-semibold text-green-800 mb-2">
+                Vielen Dank für Ihre Anfrage!
+              </h3>
+              <p className="text-green-600">
+                Wir werden uns schnellstmöglich mit Ihnen in Verbindung setzen.
+              </p>
+            </motion.div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="space-y-6"
+            >
+              {status === 'error' && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                  <p className="text-red-600 text-center">{errorMessage}</p>
+                </div>
+              )}
+
+              <div className="grid gap-6">
+                <SummarySection title="Ausgewählte Produkte">
+                  <ul className="space-y-3">
+                    {Object.entries(groupProductsByCategory()).map(([category, products]) => (
+                      <li key={category} className="pb-3 border-b border-gray-100 last:border-0">
+                        <strong className="text-gray-700">{category}:</strong>
+                        <div className="mt-1 flex flex-wrap gap-2">
+                          {products.map((product, idx) => (
+                            <span
+                              key={idx}
+                              className="inline-flex items-center px-3 py-1 rounded-full bg-white text-sm text-gray-600"
+                            >
+                              {product.name} ({product.quantity}x)
+                            </span>
+                          ))}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </SummarySection>
+
+                <SummarySection title="Budget">
+                  <p className="text-tuscher-blue/70">
+                    {parseInt(state.budget).toLocaleString('de-DE')} €
+                  </p>
+                </SummarySection>
+
+                <SummarySection title="Zeitrahmen">
+                  <p className="text-tuscher-blue/70">
+                    {timelineLabels[state.timeline] || state.timeline}
+                  </p>
+                </SummarySection>
+
+                <SummarySection title="Kontaktinformationen">
+                  <div className="space-y-2">
+                    <p className="text-tuscher-blue/70">
+                      <strong>Name:</strong> {state.contact.name}
+                    </p>
+                    <p className="text-tuscher-blue/70">
+                      <strong>Email:</strong> {state.contact.email}
+                    </p>
+                    {state.contact.phone && (
+                      <p className="text-tuscher-blue/70">
+                        <strong>Telefon:</strong> {state.contact.phone}
+                      </p>
+                    )}
+                    {state.contact.company && (
+                      <p className="text-tuscher-blue/70">
+                        <strong>Unternehmen:</strong> {state.contact.company}
+                      </p>
+                    )}
+                  </div>
+                </SummarySection>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </FunnelStep>
+  );
+};
+
+export default Step5Summary;

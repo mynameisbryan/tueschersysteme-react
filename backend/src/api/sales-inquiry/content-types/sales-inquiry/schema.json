@@ -1,0 +1,36 @@
+{
+  "kind": "collectionType",
+  "collectionName": "sales_inquiries",
+  "info": {
+    "singularName": "sales-inquiry",
+    "pluralName": "sales-inquiries",
+    "displayName": "Sales Inquiry"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "products": {
+      "type": "json",
+      "required": true
+    },
+    "budget": {
+      "type": "string",
+      "required": true
+    },
+    "timeline": {
+      "type": "enumeration",
+      "enum": [
+        "one_month",
+        "three_months",
+        "six_months",
+        "flexible"
+      ]
+    },
+    "contact": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::contact-form.contact-form"
+    }
+  }
+}

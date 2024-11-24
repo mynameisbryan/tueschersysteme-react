@@ -2,50 +2,41 @@ import { StrapiError, StrapiMediaData, StrapiResponse } from '@/types/strapi';
 import { ProductCategoryData, FAQData, ContactSectionData, WelcomeSectionData } from '@/types/content';
 import { FileResourceData } from '@/types/common';
 import qs from 'qs';
-import { BaseProductCategory, HomeProductCategory } from '@/types/common';
+import { BaseProductCategory, HomeProductCategory, Product, StrapiCollectionResponse } from '@/types/common';
+import { SalesFunnelFormData, SalesFunnelInquiry, SalesFunnelResponse } from '@/types/sales-funnel';
 
-// New unified URL handler for api.ts
-const API_CONFIG = {
-  getBaseUrl: () => {
-    if (typeof window === 'undefined') {
-      return process.env.STRAPI_INTERNAL_URL || 'http://strapi:1337';
-    }
-    return process.env.NEXT_PUBLIC_STRAPI_API_URL || 'http://localhost:1337';
-  },
-  
-  getMediaUrl: (path: string) => {
-    if (!path) return '';
-    if (path.startsWith('http')) return path;
-    return `${process.env.NEXT_PUBLIC_STRAPI_URL || 'http://strapi:1337'}${path}`;
-  }
+// Replace existing API_CONFIG with new URL handler
+const getStrapiURL = (path: string = '') => {
+  const baseUrl = typeof window === 'undefined'
+    ? process.env.STRAPI_INTERNAL_URL || 'http://strapi:1337'
+    : process.env.NEXT_PUBLIC_STRAPI_API_URL || 'http://localhost:1337';
+  return `${baseUrl}${path}`;
 };
 
+// Update getToken function
 const getToken = async () => {
-  const token = typeof window === 'undefined' 
-    ? process.env.STRAPI_API_TOKEN 
-    : process.env.NEXT_PUBLIC_STRAPI_TOKEN;
-    
+  const token = process.env.NEXT_PUBLIC_STRAPI_TOKEN || process.env.STRAPI_API_TOKEN;
   if (!token) {
     console.warn('[API] No API token found');
     throw new Error('API token is not configured');
   }
-  
   return token;
 };
 
+// Update fetchAPI function to include encodeValuesOnly
 export async function fetchAPI<T>(
   endpoint: string,
   options: Record<string, any> = {}
 ): Promise<T> {
-  const baseUrl = API_CONFIG.getBaseUrl();
+  const requestUrl = getStrapiURL(endpoint);
   const token = await getToken();
   
-  const queryString = options ? `?${qs.stringify(options)}` : '';
-  const url = `${baseUrl}${endpoint}${queryString}`;
+  const queryString = options ? `?${qs.stringify(options, { encodeValuesOnly: true })}` : '';
+  const url = `${requestUrl}${queryString}`;
 
   console.log('[API] Request details:', {
     endpoint,
-    baseUrl,
+    baseUrl: requestUrl,
     hasToken: !!token,
     tokenPrefix: token ? token.substring(0, 10) + '...' : null,
     queryParams: queryString,
@@ -210,8 +201,165 @@ export const getFileResources = async (): Promise<StrapiResponse<FileResourceDat
   return await fetchAPI('/api/file-and-resources', { populate: '*' });
 };
 
-export const getImageUrl = API_CONFIG.getMediaUrl;
+export const getImageUrl = (path: string) => {
+  if (!path) return '';
+  if (path.startsWith('http')) return path;
+  return `${getStrapiURL()}${path}`;
+};
 
 export const getWelcomeContent = async (): Promise<StrapiResponse<WelcomeSectionData>> => {
   return await fetchAPI('/api/welcome-section', { populate: '*' });
+};
+
+export const submitSalesFunnelInquiry = async (
+  inquiryData: SalesFunnelFormData
+): Promise<{ success: boolean; data?: any; error?: string }> => {
+  try {
+    // First create contact form
+    const contactResponse = await fetchAPI('/api/contact-forms', {
+      method: 'POST',
+      body: JSON.stringify({ 
+        data: {
+          name: inquiryData.contact.name,
+          email: inquiryData.contact.email,
+          phone: inquiryData.contact.phone || null,
+          company: inquiryData.contact.company || null,
+          message: `Sales Funnel Inquiry - Budget: ${inquiryData.budget}`,
+          privacy: inquiryData.contact.privacy,
+          newsletter: inquiryData.contact.newsletter || false,
+          wantContact: inquiryData.contact.wantContact || false,
+          method: inquiryData.contact.method || null,
+          time: inquiryData.contact.time || null
+        }
+      }),
+    });
+
+    if (!contactResponse.data) {
+      throw new Error('Contact form creation failed');
+    }
+
+    // Then create sales inquiry with contact relation
+    const salesResponse = await fetchAPI('/api/sales-inquiries', {
+      method: 'POST',
+      body: JSON.stringify({ 
+        data: {
+          products: inquiryData.products,
+          budget: inquiryData.budget,
+          timeline: inquiryData.timeline,
+          contact: contactResponse.data.id
+        }
+      }),
+    });
+
+    if (!salesResponse.data) {
+      throw new Error('Sales inquiry creation failed');
+    }
+
+    return {
+      success: true,
+      data: {
+        contact: contactResponse.data,
+        salesInquiry: salesResponse.data
+      }
+    };
+  } catch (error) {
+    console.error('API Error:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Ein unerwarteter Fehler ist aufgetreten'
+    };
+  }
+};
+
+interface ProductApiResponse {
+  data: Product[];
+  meta: {
+    pagination?: {
+      page: number;
+      pageSize: number;
+      pageCount: number;
+      total: number;
+    };
+  };
+}
+
+export const getCategoryProducts = async (slug: string): Promise<ProductApiResponse> => {
+  try {
+    console.log('[API] getCategoryProducts called with:', { slug });
+
+    const response = await fetchAPI<ProductApiResponse>(
+      '/api/products',
+      {
+        sort: ['Order:asc'],
+        filters: {
+          product_category: {
+            slug: {
+              $eq: slug,
+            },
+          },
+        },
+        populate: {
+          MainImage: {
+            fields: ['url', 'alternativeText', 'width', 'height'],
+          },
+          product_category: {
+            fields: ['Title', 'slug'],
+          },
+        },
+      }
+    );
+
+    // Transform the response to match expected structure
+    const transformedResponse: ProductApiResponse = {
+      data: response.data.map(product => ({
+        id: product.id,
+        attributes: {
+          Name: product.Name,
+          ShortDescription: product.ShortDescription,
+          DetailedDescription: product.DetailedDescription,
+          Features: product.Features,
+          Order: product.Order,
+          MainImage: {
+            data: {
+              id: product.MainImage?.id,
+              attributes: {
+                url: product.MainImage?.url,
+                width: product.MainImage?.width,
+                height: product.MainImage?.height,
+                alternativeText: product.MainImage?.alternativeText
+              }
+            }
+          },
+          product_category: {
+            data: {
+              id: product.product_category?.id,
+              attributes: {
+                Title: product.product_category?.Title,
+                slug: product.product_category?.slug
+              }
+            }
+          }
+        }
+      })),
+      meta: response.meta
+    };
+
+    return transformedResponse;
+  } catch (error) {
+    console.error('[API] getCategoryProducts error:', {
+      slug,
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return {
+      data: [],
+      meta: {
+        pagination: {
+          page: 1,
+          pageSize: 0,
+          pageCount: 0,
+          total: 0,
+        },
+      },
+    };
+  }
 };

@@ -56,6 +56,7 @@ export interface Product {
 export interface BaseProductCategoryAttributes {
   Title: string;
   Description: string;
+  ShortDescription?: string;
   slug: string;
   Image: StrapiMedia;
   createdAt: string;
@@ -74,39 +75,23 @@ export interface HomeProductCategory {
 // Für die Products-Page (mit products)
 export interface BaseProductCategory {
   id: number;
-  Order: number;
-  documentId: string;
   Title: string;
   Description: string;
+  ShortDescription?: string;
   slug: string;
-  Image: Array<{
-    id: number;
-    url: string;
-    alternativeText: string | null;
-    width: number;
-    height: number;
-    formats?: {
-      [key: string]: StrapiMediaFormat;
-    };
-  }>;
-  products: {
+  Order?: number;
+  Image: {
     data: Array<{
       id: number;
       attributes: {
-        Name: string;
-        ShortDescription: string;
-        MainImage?: {
-          data?: {
-            attributes?: {
-              url?: string;
-            };
-          };
+        url: string;
+        alternativeText?: string;
+        width?: number;
+        height?: number;
+        formats?: {
+          [key: string]: StrapiMediaFormat;
         };
-        Features?: string[];
       };
     }>;
   };
-  createdAt: string;
-  updatedAt: string;
-  publishedAt: string;
 } 

@@ -372,6 +372,7 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
 export interface ApiContactFormContactForm extends Struct.CollectionTypeSchema {
   collectionName: 'contact_forms';
   info: {
+    description: '';
     displayName: 'Contact Form';
     pluralName: 'contact-forms';
     singularName: 'contact-form';
@@ -380,6 +381,7 @@ export interface ApiContactFormContactForm extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    company: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -391,14 +393,17 @@ export interface ApiContactFormContactForm extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     message: Schema.Attribute.Text;
+    method: Schema.Attribute.Enumeration<['phone', 'email']>;
     name: Schema.Attribute.String;
     newsletter: Schema.Attribute.Boolean;
     phone: Schema.Attribute.String;
     privacy: Schema.Attribute.Boolean;
     publishedAt: Schema.Attribute.DateTime;
+    time: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    wantContact: Schema.Attribute.Boolean;
   };
 }
 
@@ -564,6 +569,7 @@ export interface ApiProductCategoryProductCategory
       Schema.Attribute.Unique;
     products: Schema.Attribute.Relation<'oneToMany', 'api::product.product'>;
     publishedAt: Schema.Attribute.DateTime;
+    ShortDescription: Schema.Attribute.String;
     slug: Schema.Attribute.UID<'Title'>;
     Title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
@@ -611,6 +617,43 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     >;
     publishedAt: Schema.Attribute.DateTime;
     ShortDescription: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiSalesInquirySalesInquiry
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'sales_inquiries';
+  info: {
+    displayName: 'Sales Inquiry';
+    pluralName: 'sales-inquiries';
+    singularName: 'sales-inquiry';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    budget: Schema.Attribute.String & Schema.Attribute.Required;
+    contact: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::contact-form.contact-form'
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::sales-inquiry.sales-inquiry'
+    > &
+      Schema.Attribute.Private;
+    products: Schema.Attribute.JSON & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    timeline: Schema.Attribute.Enumeration<
+      ['one_month', 'three_months', 'six_months', 'flexible']
+    >;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1222,6 +1265,7 @@ declare module '@strapi/strapi' {
       'api::hero-section.hero-section': ApiHeroSectionHeroSection;
       'api::product-category.product-category': ApiProductCategoryProductCategory;
       'api::product.product': ApiProductProduct;
+      'api::sales-inquiry.sales-inquiry': ApiSalesInquirySalesInquiry;
       'api::test.test': ApiTestTest;
       'api::ueber-uns.ueber-uns': ApiUeberUnsUeberUns;
       'api::welcome-section.welcome-section': ApiWelcomeSectionWelcomeSection;
