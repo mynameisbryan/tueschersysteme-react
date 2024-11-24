@@ -54,17 +54,26 @@ export async function submitSalesFunnelInquiry(formData: SalesFunnelFormData) {
           products: formData.products,
           budget: formData.budget,
           timeline: formData.timeline,
-          contact: {
-            connect: [{ id: contactData.data.id }] // Updated relation structure
-          }
+          contact: contactData.data.id,
+          location: formData.additionalInfo?.location || null,
+          householdSize: formData.additionalInfo?.householdSize || null,
+          livingSituation: formData.additionalInfo?.livingSituation || null,
+          specificRequirements: formData.additionalInfo?.specificRequirements || null,
+          customizationNeeds: formData.additionalInfo?.customizationNeeds || [],
+          preferredFeatures: formData.additionalInfo?.preferredFeatures || [],
+          painPoints: formData.additionalInfo?.painPoints || null
         }
       })
     });
 
     if (!salesResponse.ok) {
-      const error = await salesResponse.json();
-      console.error('Sales inquiry creation failed:', error);
-      throw new Error('Failed to create sales inquiry');
+      const errorData = await salesResponse.json();
+      console.error('Detailed Sales inquiry error:', {
+        status: salesResponse.status,
+        statusText: salesResponse.statusText,
+        error: errorData
+      });
+      throw new Error(`Failed to create sales inquiry: ${JSON.stringify(errorData)}`);
     }
 
     const salesData = await salesResponse.json();

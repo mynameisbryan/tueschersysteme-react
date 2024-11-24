@@ -4,8 +4,9 @@ import React, { useEffect } from 'react';
 import Step1ProductSelection from './steps/ProductSelection';
 import Step2Budget from './steps/Budget';
 import Step3Timeline from './steps/Timeline';
-import Step4Contact from './steps/Contact';
-import Step5Summary from './steps/Summary';
+import Step4AdditionalInfo from './steps/AdditionalInfo';
+import Step5Contact from './steps/Contact';
+import Step6Summary from './steps/Summary';
 import { FunnelProvider, useFunnel } from './FunnelContext';
 
 const FunnelContent = () => {
@@ -20,8 +21,9 @@ const FunnelContent = () => {
     <Step1ProductSelection key="step1" />,
     <Step2Budget key="step2" />,
     <Step3Timeline key="step3" />,
-    <Step4Contact key="step4" />,
-    <Step5Summary key="step5" />,
+    <Step4AdditionalInfo key="step4" />,
+    <Step5Contact key="step5" />,
+    <Step6Summary key="step6" />
   ];
 
   return (

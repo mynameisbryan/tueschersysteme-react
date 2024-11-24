@@ -15,7 +15,7 @@ const SummarySection = ({ title, children }: { title: string; children: React.Re
   </div>
 );
 
-const Step5Summary = () => {
+const Step6Summary = () => {
   const { state, currentStep, previousStep } = useFunnel();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
@@ -96,7 +96,7 @@ const Step5Summary = () => {
       isValid={true}
       isLoading={isSubmitting}
       currentStep={currentStep}
-      totalSteps={5}
+      totalSteps={6}
     >
       <div className="max-w-3xl mx-auto">
         <AnimatePresence mode="wait">
@@ -181,6 +181,70 @@ const Step5Summary = () => {
                     )}
                   </div>
                 </SummarySection>
+
+                <SummarySection title="Zusätzliche Informationen">
+                  <div className="space-y-2">
+                    {state.additionalInfo?.location && (
+                      <p className="text-tuscher-blue/70">
+                        <strong>Standort:</strong> {state.additionalInfo.location}
+                      </p>
+                    )}
+                    {state.additionalInfo?.livingSituation && (
+                      <p className="text-tuscher-blue/70">
+                        <strong>Wohnsituation:</strong> {state.additionalInfo.livingSituation}
+                      </p>
+                    )}
+                    {state.additionalInfo?.householdSize && (
+                      <p className="text-tuscher-blue/70">
+                        <strong>Haushaltsgröße:</strong> {state.additionalInfo.householdSize}
+                      </p>
+                    )}
+                    {state.additionalInfo?.age && (
+                      <p className="text-tuscher-blue/70">
+                        <strong>Alter:</strong> {state.additionalInfo.age}
+                      </p>
+                    )}
+                    {state.additionalInfo?.gender && (
+                      <p className="text-tuscher-blue/70">
+                        <strong>Geschlecht:</strong> {state.additionalInfo.gender}
+                      </p>
+                    )}
+                    {state.additionalInfo?.specificRequirements && (
+                      <p className="text-tuscher-blue/70">
+                        <strong>Spezielle Anforderungen:</strong> {state.additionalInfo.specificRequirements}
+                      </p>
+                    )}
+                    {state.additionalInfo?.customizationNeeds?.length > 0 && (
+                      <div className="text-tuscher-blue/70">
+                        <strong>Anpassungswünsche:</strong>
+                        <div className="flex flex-wrap gap-2 mt-1">
+                          {state.additionalInfo.customizationNeeds.map((need, idx) => (
+                            <span key={idx} className="inline-flex items-center px-3 py-1 rounded-full bg-white text-sm text-gray-600">
+                              {need}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {state.additionalInfo?.preferredFeatures?.length > 0 && (
+                      <div className="text-tuscher-blue/70">
+                        <strong>Gewünschte Eigenschaften:</strong>
+                        <div className="flex flex-wrap gap-2 mt-1">
+                          {state.additionalInfo.preferredFeatures.map((feature, idx) => (
+                            <span key={idx} className="inline-flex items-center px-3 py-1 rounded-full bg-white text-sm text-gray-600">
+                              {feature}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {state.additionalInfo?.painPoints && (
+                      <p className="text-tuscher-blue/70">
+                        <strong>Herausforderungen:</strong> {state.additionalInfo.painPoints}
+                      </p>
+                    )}
+                  </div>
+                </SummarySection>
               </div>
             </motion.div>
           )}
@@ -190,4 +254,4 @@ const Step5Summary = () => {
   );
 };
 
-export default Step5Summary;
+export default Step6Summary;

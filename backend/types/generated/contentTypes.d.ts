@@ -627,6 +627,7 @@ export interface ApiSalesInquirySalesInquiry
   extends Struct.CollectionTypeSchema {
   collectionName: 'sales_inquiries';
   info: {
+    description: '';
     displayName: 'Sales Inquiry';
     pluralName: 'sales-inquiries';
     singularName: 'sales-inquiry';
@@ -635,6 +636,7 @@ export interface ApiSalesInquirySalesInquiry
     draftAndPublish: true;
   };
   attributes: {
+    age: Schema.Attribute.String;
     budget: Schema.Attribute.String & Schema.Attribute.Required;
     contact: Schema.Attribute.Relation<
       'oneToOne',
@@ -643,14 +645,24 @@ export interface ApiSalesInquirySalesInquiry
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    customizationNeeds: Schema.Attribute.JSON;
+    gender: Schema.Attribute.Enumeration<
+      ['male', 'female', 'diverse', 'prefer_not_to_say']
+    >;
+    householdSize: Schema.Attribute.String;
+    livingSituation: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::sales-inquiry.sales-inquiry'
     > &
       Schema.Attribute.Private;
+    location: Schema.Attribute.String;
+    painPoints: Schema.Attribute.Text;
+    preferredFeatures: Schema.Attribute.JSON;
     products: Schema.Attribute.JSON & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
+    specificRequirements: Schema.Attribute.Text;
     timeline: Schema.Attribute.Enumeration<
       ['one_month', 'three_months', 'six_months', 'flexible']
     >;

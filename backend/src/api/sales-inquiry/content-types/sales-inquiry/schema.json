@@ -4,7 +4,8 @@
   "info": {
     "singularName": "sales-inquiry",
     "pluralName": "sales-inquiries",
-    "displayName": "Sales Inquiry"
+    "displayName": "Sales Inquiry",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -27,10 +28,43 @@
         "flexible"
       ]
     },
+    "age": {
+      "type": "string"
+    },
+    "gender": {
+      "type": "enumeration",
+      "enum": [
+        "male",
+        "female",
+        "diverse",
+        "prefer_not_to_say"
+      ]
+    },
+    "location": {
+      "type": "string"
+    },
+    "householdSize": {
+      "type": "string"
+    },
+    "specificRequirements": {
+      "type": "text"
+    },
+    "customizationNeeds": {
+      "type": "json"
+    },
+    "painPoints": {
+      "type": "text"
+    },
+    "preferredFeatures": {
+      "type": "json"
+    },
     "contact": {
       "type": "relation",
       "relation": "oneToOne",
       "target": "api::contact-form.contact-form"
+    },
+    "livingSituation": {
+      "type": "string"
     }
   }
 }

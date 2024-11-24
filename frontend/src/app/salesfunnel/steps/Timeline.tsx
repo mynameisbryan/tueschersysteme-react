@@ -47,7 +47,7 @@ const Step3Timeline = () => {
       onBack={previousStep}
       isValid={!!timeline}
       currentStep={currentStep}
-      totalSteps={5}
+      totalSteps={6}
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {timelines.map((time) => (

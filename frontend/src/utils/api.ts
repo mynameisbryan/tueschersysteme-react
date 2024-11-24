@@ -225,41 +225,58 @@ export const submitSalesFunnelInquiry = async (
           phone: inquiryData.contact.phone || null,
           company: inquiryData.contact.company || null,
           message: `Sales Funnel Inquiry - Budget: ${inquiryData.budget}`,
-          privacy: inquiryData.contact.privacy,
-          newsletter: inquiryData.contact.newsletter || false,
           wantContact: inquiryData.contact.wantContact || false,
           method: inquiryData.contact.method || null,
-          time: inquiryData.contact.time || null
+          time: inquiryData.contact.time || null,
+          privacy: inquiryData.contact.privacy,
+          newsletter: inquiryData.contact.newsletter || false
         }
-      }),
+      })
     });
 
-    if (!contactResponse.data) {
-      throw new Error('Contact form creation failed');
+    if (!contactResponse.ok) {
+      throw new Error('Failed to create contact form');
     }
 
-    // Then create sales inquiry with contact relation
+    const contactData = await contactResponse.json();
+
+    // Then create sales inquiry with all additional info fields
     const salesResponse = await fetchAPI('/api/sales-inquiries', {
       method: 'POST',
-      body: JSON.stringify({ 
+      body: JSON.stringify({
         data: {
           products: inquiryData.products,
           budget: inquiryData.budget,
           timeline: inquiryData.timeline,
-          contact: contactResponse.data.id
+          contact: contactData.data.id,
+          location: inquiryData.additionalInfo?.location,
+          householdSize: inquiryData.additionalInfo?.householdSize,
+          livingSituation: inquiryData.additionalInfo?.livingSituation,
+          specificRequirements: inquiryData.additionalInfo?.specificRequirements,
+          customizationNeeds: inquiryData.additionalInfo?.customizationNeeds || [],
+          preferredFeatures: inquiryData.additionalInfo?.preferredFeatures || [],
+          painPoints: inquiryData.additionalInfo?.painPoints
         }
-      }),
+      })
     });
 
-    if (!salesResponse.data) {
-      throw new Error('Sales inquiry creation failed');
+    // Add detailed error logging
+    if (!salesResponse.ok) {
+      const errorData = await salesResponse.json();
+      console.error('Sales inquiry submission details:', {
+        requestBody: inquiryData,
+        responseStatus: salesResponse.status,
+        responseError: errorData
+      });
+      throw new Error(`Failed to create sales inquiry: ${JSON.stringify(errorData)}`);
     }
 
+    const salesData = await salesResponse.json();
     return {
       success: true,
       data: {
-        contact: contactResponse.data,
-        salesInquiry: salesResponse.data
+        contact: contactData.data,
+        salesInquiry: salesData.data
       }
     };
   } catch (error) {
@@ -363,3 +380,13 @@ export const getCategoryProducts = async (slug: string): Promise<ProductApiRespo
     };
   }
 };
+
+interface AdditionalInformation {
+  location?: string;
+  householdSize?: string;
+  livingSituation?: string;
+  specificRequirements?: string;
+  customizationNeeds?: string[];
+  preferredFeatures?: string[];
+  painPoints?: string;
+}

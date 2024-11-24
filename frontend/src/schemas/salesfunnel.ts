@@ -13,15 +13,35 @@ export const contactFormSchema = z.object({
   newsletter: z.boolean().optional()
 });
 
+const additionalInfoSchema = z.object({
+  location: z.string().optional(),
+  householdSize: z.string().optional(),
+  livingSituation: z.string().optional(),
+  specificRequirements: z.string().optional(),
+  customizationNeeds: z.array(z.string()).optional(),
+  preferredFeatures: z.array(z.string()).optional(),
+  painPoints: z.string().optional()
+});
+
 export const salesFunnelSchema = z.object({
   products: z.array(z.object({
     category: z.string(),
     name: z.string(),
     quantity: z.number()
-  })).min(1, "Mindestens ein Produkt muss ausgewählt sein"),
+  })),
   budget: z.string(),
-  timeline: z.enum(['one_month', 'three_months', 'six_months', 'flexible']),
-  contact: contactFormSchema
+  timeline: z.string(),
+  additionalInfo: additionalInfoSchema,
+  contact: z.object({
+    name: z.string(),
+    email: z.string().email(),
+    phone: z.string().optional(),
+    company: z.string().optional(),
+    privacy: z.boolean(),
+    wantContact: z.boolean().optional(),
+    method: z.string().optional(),
+    time: z.string().optional()
+  })
 });
 
 export type ContactFormData = z.infer<typeof contactFormSchema>;

@@ -27,6 +27,15 @@ export const FunnelProvider = ({ children }: { children: React.ReactNode }) => {
     products: [],
     budget: '',
     timeline: '',
+    additionalInfo: {
+      location: '',
+      householdSize: '',
+      livingSituation: '',
+      specificRequirements: '',
+      customizationNeeds: [],
+      preferredFeatures: [],
+      painPoints: ''
+    },
     contact: {
       name: '',
       email: '',
@@ -38,7 +47,7 @@ export const FunnelProvider = ({ children }: { children: React.ReactNode }) => {
   console.log('[FunnelContext] Current State:', state);
 
   const [currentStep, setCurrentStep] = useState(0);
-  const TOTAL_STEPS = 5;
+  const TOTAL_STEPS = 6;
 
   const updateState = (update: Partial<SalesFunnelFormData>) => {
     setState(prev => ({ ...prev, ...update }));

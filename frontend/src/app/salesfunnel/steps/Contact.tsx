@@ -56,7 +56,7 @@ const InputField = ({
   </div>
 );
 
-const Step4Contact = () => {
+const Step5Contact = () => {
   const { state, updateState, nextStep, previousStep, currentStep } = useFunnel();
   const [contact, setContact] = useState<ContactForm>(state.contact || {
     name: '',
@@ -94,8 +94,14 @@ const Step4Contact = () => {
 
   const handleNext = () => {
     if (validateForm()) {
+      console.log('Contact state before update:', contact);
+      
       updateState({ contact });
-      nextStep();
+      
+      setTimeout(() => {
+        console.log('Moving to next step');
+        nextStep();
+      }, 0);
     }
   };
 
@@ -108,7 +114,7 @@ const Step4Contact = () => {
       isValid={contact.name && contact.email && contact.privacy && 
               (!contact.wantContact || (contact.method && contact.time))}
       currentStep={currentStep}
-      totalSteps={5}
+      totalSteps={6}
     >
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
@@ -231,4 +237,4 @@ const Step4Contact = () => {
   );
 };
 
-export default Step4Contact;
+export default Step5Contact;
