@@ -39,6 +39,7 @@ const ProductSelectionStep = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [loadingCategories, setLoadingCategories] = useState<Record<number, boolean>>({});
   const categoryRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
+  const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
     const loadCategories = async () => {
@@ -94,17 +95,53 @@ const ProductSelectionStep = () => {
   };
 
   const handleCategoryClick = async (categoryId: number, categorySlug: string) => {
-    await loadCategoryProducts(categoryId, categorySlug);
-    setExpandedCategory(expandedCategory === categoryId ? null : categoryId);
+    if (isAnimating) return;
+    setIsAnimating(true);
     
+    // Load products if needed
+    if (!categoryProducts[categoryId]) {
+      await loadCategoryProducts(categoryId, categorySlug);
+    }
+    
+    // If clicking the same category, just collapse it
+    if (expandedCategory === categoryId) {
+      setExpandedCategory(null);
+      setIsAnimating(false);
+      return;
+    }
+
+    // First collapse any expanded category
+    setExpandedCategory(null);
+    
+    // Wait for collapse animation to complete
+    await new Promise(resolve => setTimeout(resolve, 200));
+    
+    // Then expand the new category
+    setExpandedCategory(categoryId);
+    
+    // Wait for DOM update and expansion animation to start
+    await new Promise(resolve => setTimeout(resolve, 50));
+    
+    // Calculate scroll position with offset
+    const element = categoryRefs.current[categoryId];
+    if (element) {
+      const headerOffset = 96; // Header height
+      const buffer = 24; // Additional spacing
+      const elementRect = element.getBoundingClientRect();
+      const absoluteElementTop = elementRect.top + window.pageYOffset;
+      const middle = window.innerHeight / 4;
+      const scrollTo = absoluteElementTop - headerOffset - buffer - middle;
+
+      window.scrollTo({
+        top: Math.max(0, scrollTo), // Prevent negative scroll
+        behavior: 'smooth'
+      });
+    }
+    
+    // Reset animation state after everything completes
     setTimeout(() => {
-      if (categoryRefs.current[categoryId]) {
-        categoryRefs.current[categoryId]?.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start',
-        });
-      }
-    }, 100);
+      setIsAnimating(false);
+    }, 500); // Increased duration to account for scroll
   };
 
   const getTotalProducts = () => {
@@ -170,171 +207,179 @@ const ProductSelectionStep = () => {
       currentStep={currentStep}
       totalSteps={5}
     >
-      <div className="space-y-6">
-        {categories.map((category) => (
-          <div 
-            key={category.id} 
-            className="space-y-4"
-            ref={el => categoryRefs.current[category.id] = el}
-          >
-            <button
-              onClick={() => handleCategoryClick(category.id, category.slug)}
-              className="w-full bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-3 group"
+      <div className="pb-24">
+        <div className="space-y-6">
+          {categories.map((category) => (
+            <div 
+              key={category.id} 
+              className="space-y-4"
+              ref={el => categoryRefs.current[category.id] = el}
             >
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  {category.Image?.data?.[0]?.attributes?.url && (
-                    <div className="relative w-14 h-14 rounded-lg overflow-hidden flex-shrink-0">
-                      <Image
-                        src={getImageUrl(category.Image.data[0].attributes.url)}
-                        alt={category.Title || ''}
-                        fill
-                        className="object-cover transition-transform duration-300 group-hover:scale-105"
-                      />
+              <button
+                onClick={() => handleCategoryClick(category.id, category.slug)}
+                className={`w-full bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-3 group ${
+                  expandedCategory === category.id ? 'ring-2 ring-tuscher-blue ring-opacity-50' : ''
+                }`}
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    {category.Image?.data?.[0]?.attributes?.url && (
+                      <div className="relative w-14 h-14 rounded-lg overflow-hidden flex-shrink-0">
+                        <Image
+                          src={getImageUrl(category.Image.data[0].attributes.url)}
+                          alt={category.Title || ''}
+                          fill
+                          className="object-cover transition-transform duration-300 group-hover:scale-105"
+                        />
+                      </div>
+                    )}
+                    <div className="text-left flex-1 min-w-0">
+                      <h3 className="font-medium text-base text-tuscher-blue mb-1 truncate">
+                        {category.Title}
+                      </h3>
+                     
                     </div>
-                  )}
-                  <div className="text-left flex-1 min-w-0">
-                    <h3 className="font-medium text-base text-tuscher-blue mb-1 truncate">
-                      {category.Title}
-                    </h3>
-                   
+                  </div>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    {Object.values(selection[category.id] || {}).reduce(
+                      (sum, count) => sum + count, 0
+                    ) > 0 && (
+                      <span className="text-sm px-2.5 py-1 rounded-full bg-tuscher-blue bg-opacity-10 text-tuscher-blue font-medium">
+                        {Object.values(selection[category.id] || {}).reduce(
+                          (sum, count) => sum + count, 0
+                        )}
+                      </span>
+                    )}
+                    <ChevronDownIcon 
+                      className={`w-4 h-4 text-gray-400 transform transition-transform duration-300 ${
+                        expandedCategory === category.id ? 'rotate-180' : ''
+                      }`}
+                    />
                   </div>
                 </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  <span className="text-sm px-2.5 py-1 rounded-full bg-gray-100 text-gray-700 whitespace-nowrap">
-                    {Object.values(selection[category.id] || {}).reduce(
-                      (sum, count) => sum + count,
-                      0
-                    )}
-                  </span>
-                  <ChevronDownIcon 
-                    className={`w-4 h-4 text-gray-400 transform transition-transform duration-300 ${
-                      expandedCategory === category.id ? 'rotate-180' : ''
-                    }`}
-                  />
-                </div>
-              </div>
-            </button>
+              </button>
 
-            <AnimatePresence>
-              {expandedCategory === category.id && categoryProducts[category.id] && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ 
-                    height: 'auto', 
-                    opacity: 1,
-                    transition: {
-                      height: { duration: 0.3, ease: 'easeOut' },
-                      opacity: { duration: 0.2, ease: 'easeOut' }
-                    }
-                  }}
-                  exit={{ 
-                    height: 0, 
-                    opacity: 0,
-                    transition: {
-                      height: { duration: 0.2, ease: 'easeIn' },
-                      opacity: { duration: 0.1, ease: 'easeIn' }
-                    }
-                  }}
-                  className="overflow-hidden"
-                >
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 px-3 py-2">
-                    {categoryProducts[category.id].map((product) => (
-                      <motion.div
-                        key={product.id}
-                        initial={{ y: 20, opacity: 0 }}
-                        animate={{ 
-                          y: 0, 
-                          opacity: 1,
-                          transition: {
-                            duration: 0.3,
-                            ease: 'easeOut'
-                          }
-                        }}
-                        className="relative min-h-[120px] rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group bg-white"
-                      >
-                        <div className="flex h-full">
-                          <div className="relative w-28 flex-shrink-0">
-                            {product.attributes.MainImage?.data?.attributes?.url ? (
-                              <Image
-                                src={getImageUrl(product.attributes.MainImage.data.attributes.url)}
-                                alt={product.attributes.Name}
-                                fill
-                                className="object-cover"
-                                sizes="96px"
-                              />
-                            ) : (
-                              <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                                <span className="text-gray-400 text-xs">Kein Bild</span>
-                              </div>
-                            )}
-                          </div>
-
-                          <div className="flex-1 p-3 flex flex-col min-w-0">
-                            <div className="flex-grow">
-                              <h4 className="text-sm font-medium text-gray-900 mb-1">
-                                {product.attributes.Name}
-                              </h4>
-                              <p className="text-xs text-gray-600 leading-relaxed">
-                                {product.attributes.ShortDescription}
-                              </p>
+              <AnimatePresence mode="wait">
+                {expandedCategory === category.id && categoryProducts[category.id] && (
+                  <motion.div
+                    key={`category-${category.id}`}
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ 
+                      height: 'auto', 
+                      opacity: 1,
+                      transition: {
+                        height: { duration: 0.3, ease: [0.4, 0, 0.2, 1] },
+                        opacity: { duration: 0.2, delay: 0.1 }
+                      }
+                    }}
+                    exit={{ 
+                      height: 0, 
+                      opacity: 0,
+                      transition: {
+                        height: { duration: 0.2, ease: [0.4, 0, 0.2, 1] },
+                        opacity: { duration: 0.1 }
+                      }
+                    }}
+                    className="overflow-hidden"
+                  >
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 px-3 py-2">
+                      {categoryProducts[category.id].map((product) => (
+                        <motion.div
+                          key={product.id}
+                          initial={{ y: 20, opacity: 0 }}
+                          animate={{ 
+                            y: 0, 
+                            opacity: 1,
+                            transition: {
+                              duration: 0.3,
+                              ease: 'easeOut'
+                            }
+                          }}
+                          className="relative min-h-[120px] rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group bg-white"
+                        >
+                          <div className="flex h-full">
+                            <div className="relative w-28 flex-shrink-0">
+                              {product.attributes.MainImage?.data?.attributes?.url ? (
+                                <Image
+                                  src={getImageUrl(product.attributes.MainImage.data.attributes.url)}
+                                  alt={product.attributes.Name}
+                                  fill
+                                  className="object-cover"
+                                  sizes="96px"
+                                />
+                              ) : (
+                                <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                                  <span className="text-gray-400 text-xs">Kein Bild</span>
+                                </div>
+                              )}
                             </div>
 
-                            <div className="flex items-center justify-end pt-2 mt-auto border-t border-gray-100">
-                              <div className="inline-flex items-center bg-gray-50 rounded-full overflow-hidden border border-gray-200">
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    const currentCount = selection[category.id]?.[product.id] || 0;
-                                    if (currentCount > 0) {
+                            <div className="flex-1 p-3 flex flex-col min-w-0">
+                              <div className="flex-grow">
+                                <h4 className="text-sm font-medium text-gray-900 mb-1">
+                                  {product.attributes.Name}
+                                </h4>
+                                <p className="text-xs text-gray-600 leading-relaxed">
+                                  {product.attributes.ShortDescription}
+                                </p>
+                              </div>
+
+                              <div className="flex items-center justify-end pt-2 mt-auto border-t border-gray-100">
+                                <div className="inline-flex items-center bg-gray-50 rounded-full overflow-hidden border border-gray-200">
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      const currentCount = selection[category.id]?.[product.id] || 0;
+                                      if (currentCount > 0) {
+                                        setSelection((prev) => ({
+                                          ...prev,
+                                          [category.id]: {
+                                            ...(prev[category.id] || {}),
+                                            [product.id]: currentCount - 1,
+                                          },
+                                        }));
+                                      }
+                                    }}
+                                    className="w-6 h-6 flex items-center justify-center hover:bg-gray-100 text-gray-600 transition-colors"
+                                  >
+                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 12H4" />
+                                    </svg>
+                                  </button>
+                                  <span className="w-8 text-center text-xs font-medium text-gray-700">
+                                    {selection[category.id]?.[product.id] || 0}
+                                  </span>
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      const currentCount = selection[category.id]?.[product.id] || 0;
                                       setSelection((prev) => ({
                                         ...prev,
                                         [category.id]: {
                                           ...(prev[category.id] || {}),
-                                          [product.id]: currentCount - 1,
+                                          [product.id]: currentCount + 1,
                                         },
                                       }));
-                                    }
-                                  }}
-                                  className="w-6 h-6 flex items-center justify-center hover:bg-gray-100 text-gray-600 transition-colors"
-                                >
-                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 12H4" />
-                                  </svg>
-                                </button>
-                                <span className="w-8 text-center text-xs font-medium text-gray-700">
-                                  {selection[category.id]?.[product.id] || 0}
-                                </span>
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    const currentCount = selection[category.id]?.[product.id] || 0;
-                                    setSelection((prev) => ({
-                                      ...prev,
-                                      [category.id]: {
-                                        ...(prev[category.id] || {}),
-                                        [product.id]: currentCount + 1,
-                                      },
-                                    }));
-                                  }}
-                                  className="w-6 h-6 flex items-center justify-center hover:bg-gray-100 text-gray-600 transition-colors"
-                                >
-                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-                                  </svg>
-                                </button>
+                                    }}
+                                    className="w-6 h-6 flex items-center justify-center hover:bg-gray-100 text-gray-600 transition-colors"
+                                  >
+                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                                    </svg>
+                                  </button>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        ))}
+                        </motion.div>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ))}
+        </div>
 
         {getTotalProducts() > 0 && (
           <div className="mt-8 p-6 bg-gray-50 rounded-lg border border-gray-100">

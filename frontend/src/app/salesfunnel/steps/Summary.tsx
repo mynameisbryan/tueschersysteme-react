@@ -20,8 +20,10 @@ const Step5Summary = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     setIsSubmitting(true);
     setStatus('idle');
     setErrorMessage('');
@@ -38,6 +40,16 @@ const Step5Summary = () => {
       } else {
         setStatus('error');
         setErrorMessage(response.error || 'Fehler beim Speichern der Daten');
+      }
+
+      setIsSubmitted(true);
+      
+      const successElement = document.getElementById('submit-success');
+      if (successElement) {
+        successElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
       }
     } catch (error) {
       console.error('Submission error:', error);
