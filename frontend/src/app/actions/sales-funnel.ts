@@ -55,7 +55,7 @@ export async function submitSalesFunnelInquiry(formData: SalesFunnelFormData) {
           budget: formData.budget,
           timeline: formData.timeline,
           contact: contactData.data.id,
-          location: formData.additionalInfo?.locationString || null,
+          location: formData.additionalInfo?.location || null,
           householdSize: formData.additionalInfo?.householdSize || null,
           livingSituation: formData.additionalInfo?.livingSituation || null,
           specificRequirements: formData.additionalInfo?.specificRequirements || null,

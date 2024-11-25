@@ -116,7 +116,10 @@ const Step4AdditionalInfo = () => {
     { value: 'Energieeffizienz', icon: '💡' }
   ];
 
+  const isValid = additionalInfo.location.trim().length > 0;
+
   const handleNext = () => {
+    if (!isValid) return;
     console.log('Additional info before update:', additionalInfo);
     updateState({ additionalInfo });
     nextStep();
@@ -128,7 +131,7 @@ const Step4AdditionalInfo = () => {
       subtitle="Helfen Sie uns, Ihre Anforderungen besser zu verstehen"
       onNext={handleNext}
       onBack={previousStep}
-      isValid={true}
+      isValid={isValid}
       currentStep={currentStep}
       totalSteps={6}
     >
@@ -140,7 +143,7 @@ const Step4AdditionalInfo = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <InputField
             id="location"
-            label="Standort"
+            label="Standort *"
             value={additionalInfo.location}
             onChange={(value) => setAdditionalInfo(prev => ({ ...prev, location: value }))}
             placeholder="PLZ oder Ort"

@@ -154,11 +154,10 @@ const Step5Contact = () => {
             />
             <InputField
               id="company"
-              label="Unternehmen"
+              label="Unternehmen (falls zutreffend)"
               value={contact.company}
               onChange={(value) => setContact(prev => ({ ...prev, company: value }))}
               error={errors.company}
-              required
             />
           </div>
 
