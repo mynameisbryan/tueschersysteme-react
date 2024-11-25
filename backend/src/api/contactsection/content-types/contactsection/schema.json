@@ -4,7 +4,8 @@
   "info": {
     "singularName": "contactsection",
     "pluralName": "contactsections",
-    "displayName": "contactsection"
+    "displayName": "contactsection",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -26,6 +27,9 @@
       "type": "component",
       "repeatable": false,
       "component": "contactaddress.contactformsettings"
+    },
+    "CTAText": {
+      "type": "string"
     }
   }
 }

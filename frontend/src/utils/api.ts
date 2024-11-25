@@ -1,5 +1,5 @@
 import { StrapiError, StrapiMediaData, StrapiResponse } from '@/types/strapi';
-import { ProductCategoryData, FAQData, ContactSectionData, WelcomeSectionData } from '@/types/content';
+import { ProductCategoryData, FAQData, ContactSectionData, WelcomeSectionData, ImpressumData } from '@/types/content';
 import { FileResourceData } from '@/types/common';
 import qs from 'qs';
 import { BaseProductCategory, HomeProductCategory, Product, StrapiCollectionResponse } from '@/types/common';
@@ -389,4 +389,41 @@ interface AdditionalInformation {
   customizationNeeds?: string[];
   preferredFeatures?: string[];
   painPoints?: string;
+}
+
+export async function getImpressumData(): Promise<StrapiResponse<ImpressumData>> {
+  try {
+    // Log the URL being constructed
+    const baseUrl = getStrapiURL();
+    console.log('[Impressum] Base URL:', baseUrl);
+    
+    // Log the full request details
+    console.log('[Impressum] Making request to:', '/api/impressum', {
+      populate: '*'
+    });
+
+    const response = await fetchAPI<StrapiResponse<ImpressumData>>('/api/impressum', {
+      populate: '*'
+    });
+
+    // Log the response
+    console.log('[Impressum] Response received:', response);
+
+    if (!response?.data) {
+      console.error('[Impressum] No data in response:', response);
+      throw new Error('No data received from API');
+    }
+
+    return response;
+  } catch (error) {
+    // Enhanced error logging
+    console.error('[Impressum] API Error:', {
+      error: error instanceof Error ? {
+        message: error.message,
+        stack: error.stackv
+      } : error,
+      timestamp: new Date().toISOString()
+    });
+    throw error;
+  }
 }

@@ -17,6 +17,22 @@
     
     touch-action: pan-x pan-y;
     -webkit-tap-highlight-color: transparent;
+    
+    /* Map directly from your colors.ts */
+    --color-blue-DEFAULT: #012970;
+    --color-blue-light: #1a3d7e;
+    --color-blue-dark: #021b47;
+    --color-blue-navy: #030d26;
+    
+    --color-cyan-DEFAULT: #7CDDBA;
+    --color-cyan-light: #8FE4C6;
+    --color-cyan-dark: #68c5a4;
+    --color-cyan-glow: rgba(124,221,186,0.6);
+    
+    --color-gray-DEFAULT: #f9f9f9;
+    --color-gray-dark: #09203B;
+    --color-gray-400: #9ca3af;
+    --color-gray-700: #374151;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -88,18 +104,27 @@
   }
 
   /* Button Variants */
-  .btn-primary-light {
-    @apply btn-base bg-white text-[var(--color-navy)]
-           shadow-lg hover:shadow-[0_0_20px_var(--color-primary-glow)]
-           hover:bg-white active:scale-95;
+  .btn-primary {
+    @apply relative inline-flex items-center justify-center 
+           px-6 py-3 rounded-lg overflow-hidden
+           bg-[var(--color-blue-DEFAULT)] text-white
+           shadow-lg
+           hover:shadow-[0_4px_16px_var(--color-cyan-glow)]
+           hover:bg-[var(--color-blue-dark)] hover:text-[var(--color-cyan-DEFAULT)]
+           active:scale-95
+           transition-all duration-300;
   }
 
-  .btn-outline-light {
-    @apply btn-base bg-transparent text-white 
+  .btn-secondary {
+    @apply relative inline-flex items-center justify-center 
+           px-6 py-3 rounded-lg overflow-hidden
+           bg-transparent text-white
            border-2 border-white
-           hover:border-[var(--color-primary)]
-           hover:shadow-[0_0_20px_var(--color-primary-glow)]
-           active:scale-95;
+           shadow-lg
+           hover:shadow-[0_4px_16px_var(--color-cyan-glow)]
+           hover:bg-white hover:text-[var(--color-blue-DEFAULT)]
+           active:scale-95
+           transition-all duration-300;
   }
 
   /* Input Styles */
@@ -228,10 +253,10 @@
 
   @keyframes gradientFlow {
     0% {
-      background-position: 100% 50%;
+      background-position: 200% 50%;
     }
     100% {
-      background-position: -100% 50%;
+      background-position: -200% 50%;
     }
   }
 
@@ -412,6 +437,33 @@
   .group:hover .nav-link-gradient::after {
     transform: scaleX(1);
   }
+
+  .prose-tuscher {
+    @apply prose
+      prose-headings:text-[var(--color-navy)]
+      prose-p:text-gray-600
+      prose-a:text-[var(--color-navy)]
+      prose-a:no-underline
+      prose-a:transition-colors
+      prose-strong:text-[var(--color-navy)]
+      prose-ul:text-gray-600
+      prose-li:marker:text-[var(--color-navy)];
+  }
+
+  .prose-tuscher a:hover {
+    @apply text-[var(--color-primary)];
+  }
+
+  .btn-primary-hero {
+    @apply relative inline-flex items-center justify-center 
+           px-6 py-3 rounded-lg overflow-hidden
+           bg-white text-[var(--color-blue-DEFAULT)]
+           shadow-lg
+           hover:shadow-[0_4px_16px_var(--color-cyan-DEFAULT)]
+           hover:bg-[var(white)] hover:text-[var(--color-blue-dark)]
+           active:scale-95
+           transition-all duration-300;
+  }
 }
 
 @layer utilities {
@@ -444,16 +496,13 @@ html {
 
 @keyframes gradientFlow {
   0% {
-    background-position: 100% 50%;
-  }
-  50% {
-    background-position: 0% 50%;
+    background-position: 200% 50%;
   }
   100% {
-    background-position: -100% 50%;
+    background-position: -200% 50%;
   }
 }
 
 .animate-gradientFlow {
-  animation: gradientFlow 3s linear infinite;
+  animation: gradientFlow 8s linear infinite;
 }

@@ -4,6 +4,8 @@ import { useState, useTransition } from 'react';
 import { ContactSectionData } from '@/types/content';
 import { submitContactForm, type ContactFormData } from '@/app/actions/contact';
 import Button from '@/components/ui/Button';
+import { motion } from 'framer-motion';
+import Link from 'next/link';
 
 interface ContactSectionProps {
   initialData: ContactSectionData;
@@ -109,13 +111,27 @@ export default function ContactSection({ initialData }: ContactSectionProps) {
 
   return (
     <section id="contact-section" className="section bg-white">
-      {/* Header */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-16 lg:pt-24 pb-16">
+      {/* Existing content */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <div className="text-center max-w-2xl mx-auto">
           <h2 className="section-title">{initialData.title}</h2>
           <p className="mt-4 text-lg text-tuscher-blue/70">
             {initialData.subtitle}
           </p>
+          <div className="pt-4">
+              <Link 
+                href="/salesfunnel"
+                className="inline-flex items-center justify-center 
+                         px-12 py-5 text-lg font-medium
+                         bg-tuscher-blue text-white
+                         rounded-xl shadow-lg
+                         hover:shadow-xl hover:bg-tuscher-blue-light
+                         transform hover:scale-[1.02] active:scale-[0.98]
+                         transition-all duration-300"
+              >
+                {initialData.CTAText}
+              </Link>
+            </div>
         </div>
       </div>
 

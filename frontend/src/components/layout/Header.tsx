@@ -16,14 +16,14 @@ export default function Header() {
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 0)
-      const position = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100
-      setScrollPosition(position)
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight
+      const currentScroll = window.scrollY
+      const scrollPercentage = (currentScroll / maxScroll) * 100
+      setScrollPosition(scrollPercentage * 2)
     }
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
-
-  const gradientPosition = `${scrollPosition}%`
 
   return (
     <>
@@ -55,13 +55,7 @@ export default function Header() {
             <NavLink href="/products">Produkte</NavLink>
             <NavigationButton 
               href="#contact-section" 
-              className="group relative inline-flex items-center justify-center 
-                        px-6 py-3 rounded-lg overflow-hidden
-                        bg-tuscher-blue text-white
-                        shadow-lg
-                        hover:shadow-xl
-                        hover:bg-tuscher-blue-light
-                        transition-all duration-300"
+              className="btn-primary"
             >
               <span className="relative">Kontakt</span>
             </NavigationButton>
@@ -82,10 +76,28 @@ export default function Header() {
         
         <div className="relative h-[3px] w-full overflow-hidden">
           <div 
-            className="absolute inset-0 animate-gradientFlow"
+            className="absolute inset-0"
             style={{
-              background: 'linear-gradient(90deg, rgba(3,13,38,0.1) 0%, #0B84B5 35%, #41B8D5 50%, #0B84B5 65%, rgba(3,13,38,0.1) 100%)',
-              backgroundSize: '200% 100%',
+              background: `linear-gradient(90deg, 
+                var(--color-blue-navy) 0%, 
+                var(--color-cyan-DEFAULT) 25%, 
+                var(--color-cyan-light) 50%, 
+                var(--color-cyan-DEFAULT) 75%, 
+                var(--color-blue-navy) 100%)`,
+              backgroundSize: '400% 100%',
+              backgroundPosition: `${-scrollPosition}% 0`,
+              opacity: isScrolled ? '0.8' : '1',
+              transition: 'opacity 0.3s ease-out',
+              width: '100%',
+              willChange: 'background-position'
+            }}
+          />
+          <div 
+            className="absolute inset-0"
+            style={{
+              boxShadow: isScrolled 
+                ? '0 -1px 8px var(--color-cyan-glow)'
+                : '0 -2px 12px var(--color-cyan-glow)'
             }}
           />
         </div>
@@ -106,15 +118,16 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
   return (
     <Link 
       href={href} 
-      className={`relative py-2 text-tuscher-blue-navy group ${
-        isActive ? 'text-tuscher-blue' : ''
+      className={`relative py-2 text-[var(--color-blue-navy)] group ${
+        isActive ? 'font-medium' : ''
       }`}
     >
       <span className="relative z-10">{children}</span>
       <div className="absolute inset-x-0 bottom-0 h-[2px] overflow-hidden">
         <div className={`h-full w-full transform origin-left transition-transform duration-300
-                        bg-gradient-to-r from-[#0B84B5] via-[#41B8D5] to-[#0B84B5]
-                        ${isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`} 
+                        ${isActive 
+                          ? 'scale-x-100 bg-[var(--color-blue-navy)]' 
+                          : 'scale-x-0 bg-[var(--color-cyan-DEFAULT)] group-hover:scale-x-100'}`} 
         />
       </div>
     </Link>

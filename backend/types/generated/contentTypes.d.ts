@@ -411,6 +411,7 @@ export interface ApiContactsectionContactsection
   extends Struct.SingleTypeSchema {
   collectionName: 'contactsections';
   info: {
+    description: '';
     displayName: 'contactsection';
     pluralName: 'contactsections';
     singularName: 'contactsection';
@@ -427,6 +428,7 @@ export interface ApiContactsectionContactsection
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    CTAText: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -531,6 +533,43 @@ export interface ApiHeroSectionHeroSection extends Struct.SingleTypeSchema {
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
     Title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiImpressumImpressum extends Struct.SingleTypeSchema {
+  collectionName: 'impressums';
+  info: {
+    description: '';
+    displayName: 'Impressum';
+    pluralName: 'impressums';
+    singularName: 'impressum';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    agb: Schema.Attribute.Blocks;
+    company_info: Schema.Attribute.Blocks;
+    contact: Schema.Attribute.Blocks;
+    content_responsible: Schema.Attribute.Blocks;
+    copyright_notice: Schema.Attribute.Blocks;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    data_policy: Schema.Attribute.Blocks;
+    liability_disclaimer: Schema.Attribute.Blocks;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::impressum.impressum'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    representative: Schema.Attribute.Blocks;
+    tax_info: Schema.Attribute.Blocks;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -750,12 +789,14 @@ export interface ApiWelcomeSectionWelcomeSection
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    CTAText: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::welcome-section.welcome-section'
     > &
       Schema.Attribute.Private;
+    NeherLogo: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     Paragraphs: Schema.Attribute.RichText;
     publishedAt: Schema.Attribute.DateTime;
     Title: Schema.Attribute.String;
@@ -1275,6 +1316,7 @@ declare module '@strapi/strapi' {
       'api::faq.faq': ApiFaqFaq;
       'api::file-and-resource.file-and-resource': ApiFileAndResourceFileAndResource;
       'api::hero-section.hero-section': ApiHeroSectionHeroSection;
+      'api::impressum.impressum': ApiImpressumImpressum;
       'api::product-category.product-category': ApiProductCategoryProductCategory;
       'api::product.product': ApiProductProduct;
       'api::sales-inquiry.sales-inquiry': ApiSalesInquirySalesInquiry;

@@ -73,20 +73,28 @@ export default function MobileMenu({ isOpen, setIsOpen }: MobileMenuProps) {
                             className="group relative overflow-hidden px-4 py-2 text-lg"
                             onClick={() => setIsOpen(false)}
                           >
-                            <span className="relative z-10 text-tuscher-blue-navy transition-colors duration-200">Home</span>
-                            <span className="absolute inset-0 -translate-x-full bg-tuscher-blue-navy/10 transition-transform duration-200 ease-out group-hover:translate-x-0 shadow-[inset_0_0_12px_rgba(124,221,186,0.2)]" />
+                            <span className="relative z-10 text-[var(--color-blue-navy)] transition-colors duration-200">
+                              Home
+                            </span>
+                            <span className="absolute inset-0 -translate-x-full bg-[var(--color-cyan-DEFAULT)]/10 
+                                            transition-transform duration-200 ease-out group-hover:translate-x-0 
+                                            shadow-[inset_0_0_12px_var(--color-cyan-glow)]" />
                           </Link>
                           <Link 
                             href="/products" 
                             className="group relative overflow-hidden px-4 py-2 text-lg"
                             onClick={() => setIsOpen(false)}
                           >
-                            <span className="relative z-10 text-tuscher-blue-navy transition-colors duration-200">Produkte</span>
-                            <span className="absolute inset-0 -translate-x-full bg-tuscher-blue-navy/10 transition-transform duration-200 ease-out group-hover:translate-x-0 shadow-[inset_0_0_12px_rgba(124,221,186,0.2)]" />
+                            <span className="relative z-10 text-[var(--color-blue-navy)] transition-colors duration-200">
+                              Produkte
+                            </span>
+                            <span className="absolute inset-0 -translate-x-full bg-[var(--color-cyan-DEFAULT)]/10 
+                                            transition-transform duration-200 ease-out group-hover:translate-x-0 
+                                            shadow-[inset_0_0_12px_var(--color-cyan-glow)]" />
                           </Link>
                           <Link 
-                            href="/contact" 
-                            className="mx-4 transform overflow-hidden rounded-lg bg-tuscher-blue-navy border border-tuscher-blue-navy text-tuscher-blue-navy px-6 py-3 text-center text-lg font-medium transition-all duration-200 ease-out hover:bg-gray-100 hover:shadow-[0_4px_16px_rgba(124,221,186,0.4)] active:scale-95 shadow-[0_4px_12px_rgba(124,221,186,0.2)]"
+                            href="/#contact-section" 
+                            className="btn-primary mx-4"
                             onClick={() => setIsOpen(false)}
                           >
                             Kontakt

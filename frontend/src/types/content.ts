@@ -147,6 +147,7 @@ export interface FAQData {
 export interface ContactSectionData {
   title: string;
   subtitle: string;
+  CTAText: string;
   contact_form: {
     privacy_text: string;
     newsletter_text: string;
@@ -162,5 +163,22 @@ export interface ContactSectionData {
     email: string;
     opening_hours: string;
   };
+}
+
+export interface ImpressumData {
+  id: number;
+  attributes: {
+    company_info: any[];      // Strapi blocks content
+    representative: any[];
+    contact: any[];
+    tax_info: any[];
+    content_responsible: any[];
+    liability_disclaimer: any[];
+    copyright_notice: any[];
+    createdAt: string;
+    updatedAt: string;
+    publishedAt: string;
+    data_policy: any[];
+  }
 }
   

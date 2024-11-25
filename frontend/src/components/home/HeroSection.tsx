@@ -95,11 +95,14 @@ export default async function HeroSection() {
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2">
               <Link 
                 href="/salesfunnel" 
-                className="btn-primary-light inline-flex items-center justify-center"
+                className="btn-primary-hero"
               >
                 Passende Lösung finden
               </Link>
-              <ScrollButton href="#products-section" className="btn-outline-light">
+              <ScrollButton 
+                href="#products-section" 
+                className="btn-secondary"
+              >
                 Unsere Produkte
               </ScrollButton>
             </div>
