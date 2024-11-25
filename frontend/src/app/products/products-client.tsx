@@ -6,6 +6,7 @@ import { CategoryResponse, ProductApiResponse } from '@/types/strapi';
 import ProductHero from '@/components/products/ProductHero';
 import CategoryTabs from '@/components/products/CategoryTabs';
 import ProductGrid from '@/components/products/ProductGrid';
+import ProductCTA from '@/components/products/ProductCTA';
 import { getCategoryProducts } from '@/utils/productApi';
 import { verifyStrapiConfig } from '@/utils/strapi-config';
 
@@ -91,6 +92,7 @@ export default function ProductsClient({ categories, defaultCategory }: Products
           activeCategory={activeCategory.slug}
         />
       </div>
+      <ProductCTA />
     </>
   );
 }

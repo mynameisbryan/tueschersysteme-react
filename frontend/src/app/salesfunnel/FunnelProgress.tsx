@@ -7,7 +7,7 @@ interface FunnelProgressProps {
   export default function FunnelProgress({ steps, currentStep }: FunnelProgressProps) {
     const progressSteps = [
       'Produkte',
-      'Mengen',
+      'Budget',
       'Zeitrahmen',
       'Zusätzliche Infos',
       'Kontakt',

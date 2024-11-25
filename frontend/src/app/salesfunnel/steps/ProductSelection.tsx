@@ -45,8 +45,12 @@ const ProductSelectionStep = () => {
     const loadCategories = async () => {
       try {
         const response = await getProductCategories();
-        console.log('[ProductSelection] Raw category data:', response.data);
         setCategories(response.data);
+        // Set first category as expanded and load its products
+        if (response.data.length > 0) {
+          setExpandedCategory(response.data[0].id);
+          await loadCategoryProducts(response.data[0].id, response.data[0].slug);
+        }
       } catch (error) {
         console.error('Failed to load categories:', error);
       } finally {
@@ -325,7 +329,7 @@ const ProductSelectionStep = () => {
                               </div>
 
                               <div className="flex items-center justify-end pt-2 mt-auto border-t border-gray-100">
-                                <div className="inline-flex items-center bg-gray-50 rounded-full overflow-hidden border border-gray-200">
+                                <div className="inline-flex items-center bg-gray-50 rounded-lg overflow-hidden border border-gray-200">
                                   <button
                                     onClick={(e) => {
                                       e.stopPropagation();
@@ -340,13 +344,13 @@ const ProductSelectionStep = () => {
                                         }));
                                       }
                                     }}
-                                    className="w-6 h-6 flex items-center justify-center hover:bg-gray-100 text-gray-600 transition-colors"
+                                    className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 text-gray-600 transition-colors"
                                   >
-                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 12H4" />
                                     </svg>
                                   </button>
-                                  <span className="w-8 text-center text-xs font-medium text-gray-700">
+                                  <span className="w-10 text-center text-sm font-medium text-gray-700">
                                     {selection[category.id]?.[product.id] || 0}
                                   </span>
                                   <button
@@ -361,9 +365,9 @@ const ProductSelectionStep = () => {
                                         },
                                       }));
                                     }}
-                                    className="w-6 h-6 flex items-center justify-center hover:bg-gray-100 text-gray-600 transition-colors"
+                                    className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 text-gray-600 transition-colors"
                                   >
-                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
                                     </svg>
                                   </button>

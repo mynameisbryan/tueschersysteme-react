@@ -4,6 +4,7 @@ import ScrollButton from '@/components/ui/ScrollButton';
 import HeroBackgroundImage from './HeroBackgroundImage';
 import FeatureItem from './FeatureItem';
 import qs from 'qs';
+import Link from 'next/link';
 
 async function getHeroContent(): Promise<{ data: HeroSectionData } | null> {
   try {
@@ -92,9 +93,12 @@ export default async function HeroSection() {
               {Description}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2">
-              <ScrollButton href="#contact-section" className="btn-primary-light">
-                {CallToActionText}
-              </ScrollButton>
+              <Link 
+                href="/salesfunnel" 
+                className="btn-primary-light inline-flex items-center justify-center"
+              >
+                Passende Lösung finden
+              </Link>
               <ScrollButton href="#products-section" className="btn-outline-light">
                 Unsere Produkte
               </ScrollButton>

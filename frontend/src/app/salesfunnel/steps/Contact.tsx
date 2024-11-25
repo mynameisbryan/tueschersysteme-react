@@ -182,33 +182,84 @@ const Step5Contact = () => {
             </label>
 
             {contact.wantContact && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-8">
-                <div className="relative">
-                  <select
-                    value={contact.method || ''}
-                    onChange={(e) => setContact(prev => ({ 
-                      ...prev, 
-                      method: e.target.value 
-                    }))}
-                    className="block w-full rounded border-2 border-tuscher-blue/20 
-                             bg-white/80 py-3 px-4 text-tuscher-blue
-                             focus:border-tuscher-cyan focus:outline-none focus:ring-0"
-                  >
-                    <option value="">Kontaktart wählen</option>
-                    <option value="phone">Telefon</option>
-                    <option value="email">E-Mail</option>
-                  </select>
+              <div className="space-y-4 pl-4 sm:pl-8">
+                <div>
+                  <label className="block text-sm font-medium text-tuscher-blue mb-2">
+                    Kontaktart
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { value: 'phone', label: 'Telefon', icon: '📞', description: 'Wir rufen Sie an' },
+                      { value: 'email', label: 'E-Mail', icon: '✉️', description: 'Wir schreiben Ihnen' }
+                    ].map((method) => (
+                      <motion.button
+                        key={method.value}
+                        onClick={() => setContact(prev => ({ ...prev, method: method.value }))}
+                        className={`
+                          p-3 sm:p-6 rounded-lg border text-left transition-all
+                          ${contact.method === method.value 
+                            ? 'border-tuscher-blue bg-tuscher-blue/5' 
+                            : 'border-gray-200 hover:border-gray-300'
+                          }
+                        `}
+                        whileHover={{ scale: 1.01 }}
+                        whileTap={{ scale: 0.99 }}
+                      >
+                        <div className="flex items-center space-x-2 sm:space-x-4">
+                          <span className="hidden sm:inline text-2xl">{method.icon}</span>
+                          <div>
+                            <h3 className="font-medium text-sm sm:text-lg text-gray-900">
+                              {method.label}
+                            </h3>
+                            <p className="text-gray-600 text-xs sm:text-sm mt-0.5 sm:mt-1 hidden sm:block">
+                              {method.description}
+                            </p>
+                          </div>
+                        </div>
+                      </motion.button>
+                    ))}
+                  </div>
                 </div>
 
-                <InputField
-                  id="time"
-                  label="Gewünschte Uhrzeit"
-                  type="time"
-                  value={contact.time || ''}
-                  onChange={(value) => setContact(prev => ({ ...prev, time: value }))}
-                  error={errors.time}
-                  required
-                />
+                <div>
+                  <label className="block text-sm font-medium text-tuscher-blue mb-2">
+                    Gewünschte Uhrzeit
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { value: '09:00', label: 'Morgens', icon: '🌅', description: '8:00 - 10:00' },
+                      { value: '12:00', label: 'Mittags', icon: '☀️', description: '11:00 - 13:00' },
+                      { value: '15:00', label: 'Nachmittags', icon: '🌤️', description: '14:00 - 16:00' },
+                      { value: '18:00', label: 'Abends', icon: '🌆', description: '17:00 - 19:00' }
+                    ].map((timeSlot) => (
+                      <motion.button
+                        key={timeSlot.value}
+                        onClick={() => setContact(prev => ({ ...prev, time: timeSlot.value }))}
+                        className={`
+                          p-3 sm:p-6 rounded-lg border text-left transition-all
+                          ${contact.time === timeSlot.value 
+                            ? 'border-tuscher-blue bg-tuscher-blue/5' 
+                            : 'border-gray-200 hover:border-gray-300'
+                          }
+                        `}
+                        whileHover={{ scale: 1.01 }}
+                        whileTap={{ scale: 0.99 }}
+                      >
+                        <div className="flex items-center space-x-2 sm:space-x-4">
+                          <span className="hidden sm:inline text-2xl">{timeSlot.icon}</span>
+                          <div>
+                            <h3 className="font-medium text-sm sm:text-lg text-gray-900">
+                              {timeSlot.label}
+                            </h3>
+                            <p className="text-gray-600 text-xs sm:text-sm mt-0.5 sm:mt-1 hidden sm:block">
+                              {timeSlot.description}
+                            </p>
+                          </div>
+                        </div>
+                      </motion.button>
+                    ))}
+                  </div>
+                </div>
               </div>
             )}
           </div>
