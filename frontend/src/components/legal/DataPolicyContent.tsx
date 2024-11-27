@@ -15,11 +15,17 @@ interface Block {
 
 interface DataPolicyContentProps {
   data: {
-    data_policy: Block[];
-  }
+    attributes?: {
+      data_policy?: any[];
+    };
+  };
 }
 
 export default function DataPolicyContent({ data }: DataPolicyContentProps) {
+  if (!data?.attributes?.data_policy) {
+    return <div>Loading Data Policy content...</div>;
+  }
+
   // Convert blocks to markdown string
   const convertBlocksToMarkdown = (blocks: Block[]) => {
     if (!blocks) return '';
@@ -52,7 +58,7 @@ export default function DataPolicyContent({ data }: DataPolicyContentProps) {
     }).join('');
   };
 
-  const markdownContent = convertBlocksToMarkdown(data.data_policy);
+  const markdownContent = convertBlocksToMarkdown(data.attributes.data_policy);
 
   return (
     <article className="max-w-3xl mx-auto py-24 px-4 sm:px-6 lg:px-8">
