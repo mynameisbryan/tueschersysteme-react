@@ -7,9 +7,7 @@ import { SalesFunnelFormData, SalesFunnelInquiry, SalesFunnelResponse } from '@/
 
 // Replace existing API_CONFIG with new URL handler
 const getStrapiURL = (path: string = '') => {
-  const baseUrl = typeof window === 'undefined'
-    ? process.env.STRAPI_INTERNAL_URL || 'http://strapi:1337'
-    : process.env.NEXT_PUBLIC_STRAPI_API_URL || 'http://localhost:1337';
+  const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL || 'http://localhost:1337';
   return `${baseUrl}${path}`;
 };
 
@@ -424,6 +422,50 @@ export async function getImpressumData(): Promise<StrapiResponse<ImpressumData>>
       } : error,
       timestamp: new Date().toISOString()
     });
+    throw error;
+  }
+}
+
+// Function to get AGB data
+export async function getAGBData(): Promise<StrapiResponse<any>> {
+  try {
+    const response = await fetchAPI<StrapiResponse<any>>('/api/impressum', {
+      populate: ['agb']
+    });
+
+    if (!response?.data) {
+      console.error('[AGB] No data in response:', response);
+      throw new Error('No data received from API');
+    }
+
+    return response;
+  } catch (error) {
+    console.error('[AGB] API Error:', {
+      error: error instanceof Error ? {
+        message: error.message,
+        stack: error.stack
+      } : error,
+      timestamp: new Date().toISOString()
+    });
+    throw error;
+  }
+}
+
+// Function to get Data Policy
+export async function getDataPolicyData(): Promise<StrapiResponse<any>> {
+  try {
+    const response = await fetchAPI<StrapiResponse<any>>('/api/impressum', {
+      populate: ['data_policy']
+    });
+
+    if (!response?.data) {
+      console.error('[DataPolicy] No data in response:', response);
+      throw new Error('No data received from API');
+    }
+
+    return response;
+  } catch (error) {
+    console.error('[DataPolicy] API Error:', error);
     throw error;
   }
 }
