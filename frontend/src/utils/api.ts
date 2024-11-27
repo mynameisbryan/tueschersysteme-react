@@ -6,16 +6,19 @@ import { BaseProductCategory, HomeProductCategory, Product, StrapiCollectionResp
 import { SalesFunnelFormData, SalesFunnelInquiry, SalesFunnelResponse } from '@/types/sales-funnel';
 
 // Replace existing API_CONFIG with new URL handler
-const getStrapiURL = (path: string = '') => {
+const getStrapiUrl = (path: string = '') => {
   const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL || 'http://localhost:1337';
   return `${baseUrl}${path}`;
 };
 
 // Update getToken function
 const getToken = async () => {
-  const token = process.env.NEXT_PUBLIC_STRAPI_TOKEN || process.env.STRAPI_API_TOKEN;
+  const token = process.env.NODE_ENV === 'development'
+    ? process.env.NEXT_PUBLIC_STRAPI_TOKEN
+    : process.env.STRAPI_API_TOKEN;
+
   if (!token) {
-    console.warn('[API] No API token found');
+    console.warn('[API] No API token found for', process.env.NODE_ENV, 'environment');
     throw new Error('API token is not configured');
   }
   return token;
@@ -26,7 +29,7 @@ export async function fetchAPI<T>(
   endpoint: string,
   options: Record<string, any> = {}
 ): Promise<T> {
-  const requestUrl = getStrapiURL(endpoint);
+  const requestUrl = getStrapiUrl(endpoint);
   const token = await getToken();
   
   const queryString = options ? `?${qs.stringify(options, { encodeValuesOnly: true })}` : '';
@@ -202,7 +205,7 @@ export const getFileResources = async (): Promise<StrapiResponse<FileResourceDat
 export const getImageUrl = (path: string) => {
   if (!path) return '';
   if (path.startsWith('http')) return path;
-  return `${getStrapiURL()}${path}`;
+  return `${getStrapiUrl()}${path}`;
 };
 
 export const getWelcomeContent = async (): Promise<StrapiResponse<WelcomeSectionData>> => {
@@ -392,7 +395,7 @@ interface AdditionalInformation {
 export async function getImpressumData(): Promise<StrapiResponse<ImpressumData>> {
   try {
     // Log the URL being constructed
-    const baseUrl = getStrapiURL();
+    const baseUrl = getStrapiUrl();
     console.log('[Impressum] Base URL:', baseUrl);
     
     // Log the full request details

@@ -179,6 +179,7 @@ export interface ImpressumData {
     updatedAt: string;
     publishedAt: string;
     data_policy: any[];
+    agb: any[];
   }
 }
   
