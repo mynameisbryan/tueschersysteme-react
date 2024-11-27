@@ -13,9 +13,7 @@ const getStrapiUrl = (path: string = '') => {
 
 // Update getToken function
 const getToken = async () => {
-  const token = process.env.NODE_ENV === 'development'
-    ? process.env.NEXT_PUBLIC_STRAPI_TOKEN
-    : process.env.STRAPI_API_TOKEN;
+  const token = process.env.STRAPI_API_TOKEN;
 
   if (!token) {
     console.warn('[API] No API token found for', process.env.NODE_ENV, 'environment');
@@ -433,23 +431,17 @@ export async function getImpressumData(): Promise<StrapiResponse<ImpressumData>>
 export async function getAGBData(): Promise<StrapiResponse<any>> {
   try {
     const response = await fetchAPI<StrapiResponse<any>>('/api/impressum', {
-      populate: ['agb']
+      populate: {
+        agb: {
+          populate: '*'
+        }
+      }
     });
-
-    if (!response?.data) {
-      console.error('[AGB] No data in response:', response);
-      throw new Error('No data received from API');
-    }
-
+    
+    console.log('[AGB] Response:', response?.data?.attributes?.agb);
     return response;
   } catch (error) {
-    console.error('[AGB] API Error:', {
-      error: error instanceof Error ? {
-        message: error.message,
-        stack: error.stack
-      } : error,
-      timestamp: new Date().toISOString()
-    });
+    console.error('[AGB] API Error:', error);
     throw error;
   }
 }
@@ -458,14 +450,14 @@ export async function getAGBData(): Promise<StrapiResponse<any>> {
 export async function getDataPolicyData(): Promise<StrapiResponse<any>> {
   try {
     const response = await fetchAPI<StrapiResponse<any>>('/api/impressum', {
-      populate: ['data_policy']
+      populate: {
+        data_policy: {
+          populate: '*'
+        }
+      }
     });
-
-    if (!response?.data) {
-      console.error('[DataPolicy] No data in response:', response);
-      throw new Error('No data received from API');
-    }
-
+    
+    console.log('[DataPolicy] Full API Response:', response);
     return response;
   } catch (error) {
     console.error('[DataPolicy] API Error:', error);

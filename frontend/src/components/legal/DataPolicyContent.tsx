@@ -1,70 +1,40 @@
 'use client';
 
 import Markdown from 'markdown-to-jsx';
-
-interface Block {
-  type: string;
-  children: Array<{
-    text: string;
-    type?: string;
-    url?: string;
-    bold?: boolean;
-    code?: boolean;
-  }>;
-}
+import { convertBlocksToMarkdown } from '@/utils/markdown';
+import { Block } from '@/types/content';
+import ErrorBoundary from '../common/ErrorBoundary';
 
 interface DataPolicyContentProps {
   data: {
-    attributes?: {
-      data_policy?: any[];
-    };
-  };
+    id: number;
+    data_policy: Block[];
+    // ... other fields
+  } | null;
 }
 
-export default function DataPolicyContent({ data }: DataPolicyContentProps) {
-  if (!data?.attributes?.data_policy) {
-    return <div>Loading Data Policy content...</div>;
+const DataPolicyContent: React.FC<DataPolicyContentProps> = ({ data }) => {
+  console.log('[DataPolicy] Received data:', {
+    hasData: !!data,
+    hasPolicy: !!data?.data_policy,
+    policyLength: data?.data_policy?.length
+  });
+
+  if (!data || !Array.isArray(data.data_policy)) {
+    console.error('[DataPolicy] Invalid or missing policy content:', data);
+    return <div className="p-4 text-gray-600">Content not available</div>;
   }
 
-  // Convert blocks to markdown string
-  const convertBlocksToMarkdown = (blocks: Block[]) => {
-    if (!blocks) return '';
-    
-    return blocks.map(block => {
-      const text = block.children.map(child => {
-        if (child.type === 'link') {
-          return `[${child.text}](${child.url})`;
-        }
-        if (child.bold) {
-          return `**${child.text}**`;
-        }
-        return child.text;
-      }).join('');
-
-      switch (block.type) {
-        case 'heading-1':
-          return `# ${text}\n\n`;
-        case 'heading-2':
-          return `## ${text}\n\n`;
-        case 'heading-3':
-          return `### ${text}\n\n`;
-        case 'paragraph':
-          return `${text}\n\n`;
-        case 'thematic-break':
-          return '---\n\n';
-        default:
-          return text + '\n\n';
-      }
-    }).join('');
-  };
-
-  const markdownContent = convertBlocksToMarkdown(data.attributes.data_policy);
+  const markdownContent = convertBlocksToMarkdown(data.data_policy);
+  if (!markdownContent.trim()) {
+    return <div className="p-4 text-gray-600">No content to display</div>;
+  }
 
   return (
-    <article className="max-w-3xl mx-auto py-24 px-4 sm:px-6 lg:px-8">
-      <div className="prose prose-tuscher max-w-none">
-        <Markdown
-          options={{
+    <ErrorBoundary>
+      <article className="max-w-3xl mx-auto py-24 px-4 sm:px-6 lg:px-8">
+        <div className="prose prose-tuscher max-w-none">
+          <Markdown options={{
             wrapper: 'div',
             forceWrapper: true,
             forceBlock: true,
@@ -74,12 +44,17 @@ export default function DataPolicyContent({ data }: DataPolicyContentProps) {
               h3: { props: { className: 'text-xl font-bold mb-3 mt-6' } },
               p: { props: { className: 'mb-4 leading-relaxed' } },
               a: { props: { className: 'text-blue-600 hover:underline' } },
+              hr: { props: { className: 'my-8 border-t border-gray-200' } },
+              ul: { props: { className: 'list-disc pl-6 mb-4' } },
+              ol: { props: { className: 'list-decimal pl-6 mb-4' } },
             },
-          }}
-        >
-          {markdownContent}
-        </Markdown>
-      </div>
-    </article>
+          }}>
+            {markdownContent}
+          </Markdown>
+        </div>
+      </article>
+    </ErrorBoundary>
   );
-} 
+};
+
+export default DataPolicyContent; 

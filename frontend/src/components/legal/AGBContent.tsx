@@ -1,69 +1,40 @@
 'use client';
 
 import Markdown from 'markdown-to-jsx';
-
-interface Block {
-  type: string;
-  children: Array<{
-    text: string;
-    type?: string;
-    url?: string;
-    bold?: boolean;
-    code?: boolean;
-  }>;
-}
+import { convertBlocksToMarkdown } from '@/utils/markdown';
+import { Block } from '@/types/content';
+import ErrorBoundary from '../common/ErrorBoundary';
 
 interface AGBContentProps {
   data: {
-    attributes?: {
-      agb?: any[];
-    };
-  };
+    id: number;
+    agb: Block[];
+    // ... other fields
+  } | null;
 }
 
 const AGBContent: React.FC<AGBContentProps> = ({ data }) => {
-  if (!data?.attributes?.agb) {
-    return <div>Loading AGB content...</div>;
+  console.log('[AGB] Received data:', {
+    hasData: !!data,
+    hasAGB: !!data?.agb,
+    agbLength: data?.agb?.length
+  });
+
+  if (!data || !Array.isArray(data.agb)) {
+    console.error('[AGB] Invalid or missing AGB content:', data);
+    return <div className="p-4 text-gray-600">Content not available</div>;
   }
 
-  const convertBlocksToMarkdown = (blocks: Block[]) => {
-    if (!blocks) return '';
-    
-    return blocks.map(block => {
-      const text = block.children.map(child => {
-        if (child.type === 'link') {
-          return `[${child.text}](${child.url})`;
-        }
-        if (child.bold) {
-          return `**${child.text}**`;
-        }
-        return child.text;
-      }).join('');
-
-      switch (block.type) {
-        case 'heading-1':
-          return `# ${text}\n\n`;
-        case 'heading-2':
-          return `## ${text}\n\n`;
-        case 'heading-3':
-          return `### ${text}\n\n`;
-        case 'paragraph':
-          return `${text}\n\n`;
-        case 'thematic-break':
-          return '---\n\n';
-        default:
-          return text + '\n\n';
-      }
-    }).join('');
-  };
-
-  const markdownContent = convertBlocksToMarkdown(data.attributes.agb);
+  const markdownContent = convertBlocksToMarkdown(data.agb);
+  if (!markdownContent.trim()) {
+    return <div className="p-4 text-gray-600">No content to display</div>;
+  }
 
   return (
-    <article className="max-w-3xl mx-auto py-24 px-4 sm:px-6 lg:px-8">
-      <div className="prose prose-tuscher max-w-none">
-        <Markdown
-          options={{
+    <ErrorBoundary>
+      <article className="max-w-3xl mx-auto py-24 px-4 sm:px-6 lg:px-8">
+        <div className="prose prose-tuscher max-w-none">
+          <Markdown options={{
             wrapper: 'div',
             forceWrapper: true,
             forceBlock: true,
@@ -74,13 +45,15 @@ const AGBContent: React.FC<AGBContentProps> = ({ data }) => {
               p: { props: { className: 'mb-4 leading-relaxed' } },
               a: { props: { className: 'text-blue-600 hover:underline' } },
               hr: { props: { className: 'my-8 border-t border-gray-200' } },
+              ul: { props: { className: 'list-disc pl-6 mb-4' } },
+              ol: { props: { className: 'list-decimal pl-6 mb-4' } },
             },
-          }}
-        >
-          {markdownContent}
-        </Markdown>
-      </div>
-    </article>
+          }}>
+            {markdownContent}
+          </Markdown>
+        </div>
+      </article>
+    </ErrorBoundary>
   );
 };
 

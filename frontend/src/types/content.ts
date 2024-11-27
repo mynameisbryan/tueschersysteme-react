@@ -165,21 +165,53 @@ export interface ContactSectionData {
   };
 }
 
+export interface BlockChild {
+  text: string;
+  type?: string;
+  url?: string;
+  bold?: boolean;
+  italic?: boolean;
+  code?: boolean;
+  underline?: boolean;
+}
+
+export interface Block {
+  id: string;
+  type: string;
+  children: BlockChild[];
+  data?: Record<string, any>;
+}
+
+export interface ImpressumAttributes {
+  company_info: Block[];
+  representative: Block[];
+  contact: Block[];
+  tax_info: Block[];
+  content_responsible: Block[];
+  liability_disclaimer: Block[];
+  copyright_notice: Block[];
+  data_policy: Block[];
+  agb: Block[];
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+}
+
 export interface ImpressumData {
   id: number;
   attributes: {
-    company_info: any[];      // Strapi blocks content
-    representative: any[];
-    contact: any[];
-    tax_info: any[];
-    content_responsible: any[];
-    liability_disclaimer: any[];
-    copyright_notice: any[];
+    agb: Block[];
+    data_policy: Block[];
+    company_info: Block[];
+    representative: Block[];
+    contact: Block[];
+    tax_info: Block[];
+    content_responsible: Block[];
+    liability_disclaimer: Block[];
+    copyright_notice: Block[];
     createdAt: string;
     updatedAt: string;
     publishedAt: string;
-    data_policy: any[];
-    agb: any[];
-  }
+  };
 }
   
