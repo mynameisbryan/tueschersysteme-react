@@ -15,11 +15,17 @@ interface Block {
 
 interface AGBContentProps {
   data: {
-    agb: Block[];
-  }
+    attributes?: {
+      agb?: any[];
+    };
+  };
 }
 
-export default function AGBContent({ data }: AGBContentProps) {
+const AGBContent: React.FC<AGBContentProps> = ({ data }) => {
+  if (!data?.attributes?.agb) {
+    return <div>Loading AGB content...</div>;
+  }
+
   const convertBlocksToMarkdown = (blocks: Block[]) => {
     if (!blocks) return '';
     
@@ -51,7 +57,7 @@ export default function AGBContent({ data }: AGBContentProps) {
     }).join('');
   };
 
-  const markdownContent = convertBlocksToMarkdown(data.agb);
+  const markdownContent = convertBlocksToMarkdown(data.attributes.agb);
 
   return (
     <article className="max-w-3xl mx-auto py-24 px-4 sm:px-6 lg:px-8">
@@ -76,4 +82,6 @@ export default function AGBContent({ data }: AGBContentProps) {
       </div>
     </article>
   );
-} 
+};
+
+export default AGBContent; 
